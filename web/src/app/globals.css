@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+:root {
+  --ink: #14262b;
+  --ink-soft: #3c5257;
+  --paper: #f1f4ee;
+  --surface: #ffffff;
+  --surface-sunken: #e7ebe2;
+  --line: #d6dcd0;
+
+  --teal: #0e6e68;
+  --teal-dim: #0a4f4b;
+  --teal-tint: #e2efec;
+
+  --gold: #a97c22;
+  --gold-tint: #f6ecd6;
+
+  --green: #2f7a51;
+  --green-tint: #e5f1e8;
+
+  --amber: #b2761f;
+  --amber-tint: #f7ecd9;
+
+  --coral: #ab4636;
+  --coral-tint: #f6e6e2;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #eef3ef;
+    --ink-soft: #aabdb8;
+    --paper: #101c1f;
+    --surface: #17262a;
+    --surface-sunken: #0d1618;
+    --line: #26383c;
+
+    --teal: #4fb3aa;
+    --teal-dim: #7fcdc3;
+    --teal-tint: #16302e;
+
+    --gold: #d9ab54;
+    --gold-tint: #2c2413;
+
+    --green: #6cc491;
+    --green-tint: #142a1c;
+
+    --amber: #dba854;
+    --amber-tint: #2a2113;
+
+    --coral: #e08876;
+    --coral-tint: #2c1b17;
+  }
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-line: var(--line);
+
+  --color-teal: var(--teal);
+  --color-teal-dim: var(--teal-dim);
+  --color-teal-tint: var(--teal-tint);
+
+  --color-gold: var(--gold);
+  --color-gold-tint: var(--gold-tint);
+
+  --color-green: var(--green);
+  --color-green-tint: var(--green-tint);
+
+  --color-amber: var(--amber);
+  --color-amber-tint: var(--amber-tint);
+
+  --color-coral: var(--coral);
+  --color-coral-tint: var(--coral-tint);
+
+  --font-serif: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--teal);
+  color: var(--surface);
+}
+
+.tabnum {
+  font-variant-numeric: tabular-nums;
+}
