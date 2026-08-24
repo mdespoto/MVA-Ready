@@ -1,6 +1,4 @@
 import os
-import subprocess
-import sys
 
 import pytest
 
@@ -8,12 +6,6 @@ from merific.bars_scoring import score_skill1
 from merific.indicators import extract_indicators
 
 FIXTURES = os.path.join(os.path.dirname(__file__), "fixtures")
-
-
-@pytest.fixture(scope="session", autouse=True)
-def build_fixtures():
-    script = os.path.join(FIXTURES, "make_fixtures.py")
-    subprocess.run([sys.executable, script], check=True, cwd=FIXTURES)
 
 
 @pytest.mark.parametrize(

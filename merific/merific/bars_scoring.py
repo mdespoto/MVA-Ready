@@ -1,4 +1,5 @@
-"""Rule-based BARS scorer for Vještina 1 — "Modeliranje financijskih tablica".
+"""Rule-based BARS scorers for Vještina 1 ("Modeliranje financijskih tablica")
+and Vještina 2 ("Analitička interpretacija i komunikacija financijskih nalaza").
 
 This is deliberately NOT the ML classifier described in the Merific
 methodology (H1/H2): that model is trained on an expert-labelled corpus
@@ -20,6 +21,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from .indicators import ModelIndicators
+from .text_indicators import TextIndicators
 
 LEVEL_NAMES = {
     1: "Razina 1 — Osnovni korisnik",
@@ -172,6 +174,109 @@ def score_skill1(m: ModelIndicators) -> BARSResult:
         skill="Vještina 1: Modeliranje financijskih tablica",
         level=level,
         level_name=LEVEL_NAMES[level],
+        checks=checks,
+        gap_to_next_level=gap,
+    )
+
+
+# ============================================================================
+# Vještina 2 — Analitička interpretacija i komunikacija financijskih nalaza
+# ============================================================================
+
+SKILL2_LEVEL_NAMES = {
+    1: "Razina 1 — Opisni izvjestitelj",
+    2: "Razina 2 — Kontekstualni analitičar",
+    3: "Razina 3 — Samostalan analitičar (ciljna razina)",
+    4: "Razina 4 — Napredni analitičar / strateški savjetnik",
+}
+
+
+def _check_skill2_level_2(t: TextIndicators) -> LevelCheck:
+    """"Uspoređuje rezultate s relevantnim benchmarkom... i identificira
+    odstupanja. Objašnjava uzroke poznatih odstupanja na razini direktno
+    opažljivih faktora."""
+    c = LevelCheck(level=2)
+    (c.satisfied if t.has_benchmark_language else c.missing).append(
+        "usporedba s benchmarkom (plan, prošla godina, prosjek)"
+    )
+    (c.satisfied if t.has_causal_language else c.missing).append("objašnjava uzrok odstupanja")
+    (c.satisfied if t.n_numeric_tokens >= 2 else c.missing).append("kvantificirani podaci (>= 2 broja/postotka)")
+    (c.satisfied if t.n_distinct_finance_terms >= 2 else c.missing).append("domenski financijski vokabular (>= 2 pojma)")
+    return c
+
+
+def _check_skill2_level_3(t: TextIndicators) -> LevelCheck:
+    """"Strukturira analitički narativ koji vodi... do zaključka i
+    preporuke. Jasno razlikuje simptom od uzroka... kvantificira
+    implikaciju za ključne financijske metrike. Prezentira scenarije...
+    Zaključci su specifični i akcijski orijentirani."""
+    c = LevelCheck(level=3)
+    (c.satisfied if t.has_structure_markers else c.missing).append(
+        "struktura: ključna poruka / sažetak / zaključak / preporuka"
+    )
+    (c.satisfied if t.has_recommendation_language else c.missing).append("akcijski orijentirana preporuka")
+    (c.satisfied if t.has_scenario_language else c.missing).append("scenarijska analiza / eksplicitna neizvjesnost")
+    (c.satisfied if t.conclusion_paragraph_has_number else c.missing).append(
+        "kvantificirana implikacija u istom odlomku kao zaključak/preporuka"
+    )
+    (c.satisfied if t.has_contrast_pattern else c.missing).append("eksplicitno razlikuje simptom od uzroka")
+    (c.satisfied if t.n_distinct_finance_terms >= 4 else c.missing).append("veća gustoća financijskog vokabulara (>= 4 pojma)")
+    return c
+
+
+def _check_skill2_level_4(t: TextIndicators) -> LevelCheck:
+    """"Dizajnira analizu koja testira [ključne] pretpostavke... na kojim
+    razinama... preporuka mijenja predznak. Komunicira s različitim
+    publikama... Sposobna je prepoznati kada podaci nisu dovoljno
+    kvalitetni... i jasno komunicirati tu neizvjesnost."""
+    c = LevelCheck(level=4)
+    (c.satisfied if t.has_sensitivity_language else c.missing).append(
+        "osjetljivosna analiza / prag na kojem se zaključak mijenja"
+    )
+    (c.satisfied if t.n_distinct_audience_keywords >= 2 else c.missing).append(
+        "komunikacija prilagođena >= 2 različite publike (uprava/CFO/investitori/operativni tim)"
+    )
+    (c.satisfied if t.has_data_quality_language else c.missing).append("eksplicitno priznaje ograničenja kvalitete podataka")
+    (c.satisfied if t.has_strategic_context_language else c.missing).append(
+        "integrira strateški/operativni/tržišni kontekst uz financijsku analizu"
+    )
+    return c
+
+
+_SKILL2_LEVEL2_RATIO = 0.5
+
+
+def score_skill2(t: TextIndicators) -> BARSResult:
+    checks = {
+        2: _check_skill2_level_2(t),
+        3: _check_skill2_level_3(t),
+        4: _check_skill2_level_4(t),
+    }
+
+    # Level 2 needs an explicit *mandatory* gate on top of the usual ratio:
+    # quantification and domain vocabulary are satisfied by the BARS
+    # document's own Level-1 example ("troškovi su bili viši nego prethodne
+    # godine" already has numbers, "trošak", and even an implicit
+    # year-over-year comparison) — the actual level-1-vs-2 differentiator
+    # per the rubric is that Level 2 *explains the cause* of a deviation,
+    # not merely quantifies or mentions a prior period. Without this gate,
+    # any text with a couple of numbers and two finance words would clear
+    # the ratio threshold on quantification + vocabulary alone.
+    level = 1
+    if t.has_causal_language and checks[2].score >= _SKILL2_LEVEL2_RATIO:
+        level = 2
+        if checks[3].score >= _PASS_THRESHOLD[3]:
+            level = 3
+            if checks[4].score >= _PASS_THRESHOLD[4]:
+                level = 4
+
+    next_level = level + 1
+    gap = list(checks[next_level].missing) if next_level in checks else []
+
+    return BARSResult(
+        skill="Vještina 2: Analitička interpretacija i komunikacija financijskih nalaza",
+        level=level,
+        level_name=SKILL2_LEVEL_NAMES[level],
         checks=checks,
         gap_to_next_level=gap,
     )

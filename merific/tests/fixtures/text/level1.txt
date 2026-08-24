@@ -1,0 +1,13 @@
+Izvještaj o poslovanju za treći kvartal
+
+U tablici ispod prikazani su prihodi i troškovi po mjesecima.
+
+Mjesec: Srpanj, Kolovoz, Rujan
+Prihod: 120.000, 125.000, 131.000
+Trošak: 90.000, 95.000, 101.000
+
+Troškovi su bili viši nego prethodne godine.
+
+Prihodi su porasli za 12% u trećem kvartalu.
+
+Za prikaz trenda prihoda kroz vrijeme korišten je tortni grafikon.

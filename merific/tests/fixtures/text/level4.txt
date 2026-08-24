@@ -1,0 +1,11 @@
+Investicijska analiza - preuzimanje konkurenta X
+
+Sažetak za upravu (jedna stranica): Preporučujemo odobrenje akvizicije uz preliminarnu procjenu neto sadašnje vrijednosti (NPV) od 3,4 milijuna eura, temeljenu na diskontiranom novčanom toku (DCF).
+
+Osjetljivosna analiza pokazuje da NPV mijenja predznak iz pozitivne u negativnu ako diskontna stopa prijeđe 14,5% ili ako terminalni rast padne ispod 1%, dok EBITDA marža u petoj godini ima najveći utjecaj na zaključak od sve tri ključne pretpostavke.
+
+U prilogu za CFO nalazi se detaljna metodologija izračuna WACC-a i pretpostavki po godinama, dok je operativnom timu poslana zasebna, tehnički pojednostavljena verzija fokusirana na integraciju.
+
+Napomena o ograničenjima: procjena tržišnog rasta temelji se na podacima nedovoljne pouzdanosti za segment izvan EU tržišta, stoga preporučujemo dodatnu due diligence prije konačne odluke o toj komponenti vrijednosti.
+
+Analiza integrira financijsku procjenu sa strateškim kontekstom konsolidacije tržišta i operativnim rizicima integracije dviju organizacija.
