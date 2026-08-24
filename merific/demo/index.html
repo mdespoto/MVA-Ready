@@ -99,7 +99,9 @@
     border-bottom: 1px solid var(--rule-strong);
     flex-wrap: wrap;
   }
-  .brand { display: flex; align-items: baseline; gap: 12px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .mark { flex-shrink: 0; }
+  .brand h1 { margin-left: 2px; }
   .brand h1 { font-size: 30px; letter-spacing: 0.01em; }
   .brand .tag {
     font-family: var(--font-mono);
@@ -481,6 +483,10 @@
 <div class="shell">
   <header class="top">
     <div class="brand">
+      <svg class="mark" width="30" height="30" viewBox="0 0 64 64" aria-hidden="true">
+        <polygon points="6,50 6,10 16,10 32,34 32,50" fill="var(--blue)" />
+        <polygon points="32,34 48,10 58,10 58,50 48,50 48,24 32,50" fill="var(--green)" />
+      </svg>
       <h1>Merific</h1>
       <span class="tag">PoC · BARS analizator</span>
     </div>
@@ -1214,7 +1220,7 @@ async function extractDocxText(buffer) {
    lost. Structure validated with poppler (pdfinfo/pdftoppm) before this
    went into the page — see /merific/demo/ in the repo history. */
 
-const PDF_WINANSI_MAP = { "—": 0x97, "–": 0x96, "‘": 0x91, "’": 0x92, "“": 0x93, "”": 0x94, "•": 0x95, "…": 0x85 };
+const PDF_WINANSI_MAP = { "—": 0x97, "–": 0x96, "‘": 0x91, "’": 0x92, "“": 0x93, "”": 0x94, "•": 0x95, "…": 0x85, "·": 0xb7 };
 const PDF_CROATIAN_TRANSLITERATE = { "č": "c", "Č": "C", "ć": "c", "Ć": "C", "š": "s", "Š": "S", "ž": "z", "Ž": "Z", "đ": "dj", "Đ": "Dj" };
 
 function pdfEncodeBytes(s) {
@@ -1269,6 +1275,30 @@ function pdfWrapText(text, size, bold, maxWidth) {
   return lines.length ? lines : [""];
 }
 
+const PDF_COLORS = {
+  navy: [0.165, 0.306, 0.612], // --blue
+  green: [0.122, 0.478, 0.298], // --green
+  greenSoft: [0.882, 0.941, 0.902], // --green-soft
+  amber: [0.651, 0.396, 0.047], // --amber
+  amberSoft: [0.961, 0.914, 0.839], // --amber-soft
+  grey: [0.827, 0.855, 0.808], // --rule
+  ink: [0.086, 0.129, 0.102], // --ink
+  inkSoft: [0.337, 0.388, 0.302], // --ink-soft
+  inkFaint: [0.486, 0.533, 0.455], // --ink-faint
+  white: [1, 1, 1],
+};
+
+// same "M" mark as the inline SVG in the page header, in local (y-up) units
+const PDF_MARK_LEFT_LOCAL = [6, 10, 6, 50, 16, 50, 32, 26, 32, 10];
+const PDF_MARK_RIGHT_LOCAL = [32, 26, 48, 50, 58, 50, 58, 10, 48, 10, 48, 36, 32, 10];
+function pdfMarkPolygonsAt(x0, y0, heightPt) {
+  const scale = heightPt / 40;
+  const tx = (lx) => x0 + (lx - 6) * scale;
+  const ty = (ly) => y0 + (ly - 10) * scale;
+  const xf = (pts) => { const out = []; for (let i = 0; i < pts.length; i += 2) out.push(tx(pts[i]), ty(pts[i + 1])); return out; };
+  return { left: xf(PDF_MARK_LEFT_LOCAL), right: xf(PDF_MARK_RIGHT_LOCAL), width: 52 * scale };
+}
+
 class PdfDoc {
   constructor() {
     this.pageWidth = 595; // A4, points
@@ -1276,23 +1306,27 @@ class PdfDoc {
     this.marginLeft = 56;
     this.marginRight = 56;
     this.marginTop = 785;
-    this.marginBottom = 56;
+    this.marginBottom = 64;
     this.pages = [[]];
     this.cursorY = this.marginTop;
   }
+  _cur() { return this.pages[this.pages.length - 1]; }
   _ensureSpace(h) {
     if (this.cursorY - h < this.marginBottom) {
       this.pages.push([]);
       this.cursorY = this.marginTop;
     }
   }
-  addText(text, size, bold, indent) {
+  addRect(x, y, w, h, color) { this._cur().push({ type: "rect", x, y, w, h, color }); }
+  addPolygon(points, color) { this._cur().push({ type: "poly", points, color }); }
+  addTextAt(text, x, y, size, bold, color) { this._cur().push({ type: "text", text, x, y, size, bold: !!bold, color }); }
+  addText(text, size, bold, indent, color) {
     indent = indent || 0;
     const lineHeight = size * 1.4;
     const maxWidth = this.pageWidth - this.marginLeft - this.marginRight - indent;
     for (const line of pdfWrapText(text, size, !!bold, maxWidth)) {
       this._ensureSpace(lineHeight);
-      this.pages[this.pages.length - 1].push({ text: line, x: this.marginLeft + indent, y: this.cursorY, size, bold: !!bold });
+      this._cur().push({ type: "text", text: line, x: this.marginLeft + indent, y: this.cursorY, size, bold: !!bold, color });
       this.cursorY -= lineHeight;
     }
   }
@@ -1301,6 +1335,12 @@ class PdfDoc {
     if (this.cursorY < this.marginBottom) {
       this.pages.push([]);
       this.cursorY = this.marginTop;
+    }
+  }
+  addFooterToAllPages(text) {
+    for (const page of this.pages) {
+      page.push({ type: "rect", x: this.marginLeft, y: 44, w: this.pageWidth - this.marginLeft - this.marginRight, h: 0.75, color: PDF_COLORS.grey });
+      page.push({ type: "text", text, x: this.marginLeft, y: 28, size: 8.5, bold: false, color: PDF_COLORS.inkFaint });
     }
   }
   build() {
@@ -1318,15 +1358,25 @@ class PdfDoc {
         ascii: `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${this.pageWidth} ${this.pageHeight}] /Resources << /Font << /F1 ${fontF1} 0 R /F2 ${fontF2} 0 R >> >> /Contents ${contentObjNums[i]} 0 R >>`,
       };
       const opBytes = [];
-      pdfPushAscii(opBytes, "BT\n");
       for (const item of this.pages[i]) {
-        pdfPushAscii(opBytes, `/${item.bold ? "F2" : "F1"} ${item.size} Tf\n`);
-        pdfPushAscii(opBytes, `1 0 0 1 ${item.x.toFixed(2)} ${item.y.toFixed(2)} Tm\n`);
-        pdfPushAscii(opBytes, "(");
-        opBytes.push(...pdfEscapedBytes(item.text));
-        pdfPushAscii(opBytes, ") Tj\n");
+        const c = item.color || PDF_COLORS.ink;
+        pdfPushAscii(opBytes, `${c[0].toFixed(3)} ${c[1].toFixed(3)} ${c[2].toFixed(3)} rg\n`);
+        if (item.type === "rect") {
+          pdfPushAscii(opBytes, `${item.x.toFixed(2)} ${item.y.toFixed(2)} ${item.w.toFixed(2)} ${item.h.toFixed(2)} re f\n`);
+        } else if (item.type === "poly") {
+          const pts = item.points;
+          pdfPushAscii(opBytes, `${pts[0].toFixed(2)} ${pts[1].toFixed(2)} m\n`);
+          for (let k = 2; k < pts.length; k += 2) pdfPushAscii(opBytes, `${pts[k].toFixed(2)} ${pts[k + 1].toFixed(2)} l\n`);
+          pdfPushAscii(opBytes, `h f\n`);
+        } else {
+          pdfPushAscii(opBytes, "BT\n");
+          pdfPushAscii(opBytes, `/${item.bold ? "F2" : "F1"} ${item.size} Tf\n`);
+          pdfPushAscii(opBytes, `1 0 0 1 ${item.x.toFixed(2)} ${item.y.toFixed(2)} Tm\n`);
+          pdfPushAscii(opBytes, "(");
+          opBytes.push(...pdfEscapedBytes(item.text));
+          pdfPushAscii(opBytes, ") Tj\nET\n");
+        }
       }
-      pdfPushAscii(opBytes, "ET");
       objects[contentObjNums[i]] = { bytesWithStream: opBytes };
     }
 
@@ -1363,67 +1413,104 @@ class PdfDoc {
   }
 }
 
-function buildCertificateContent(nowStr) {
-  const lines = []; // {text, size, bold, indent}
-  const push = (text, size, bold, indent) => lines.push({ text, size, bold: !!bold, indent: indent || 0 });
-
-  push("MERIFIC", 22, true);
-  push("Sažetak samoprocjene — PoC prototip", 12, false);
-  push("", 4);
-  push(
-    "Ovo NIJE službena kvalifikacija niti potvrda Europske komisije ili bilo kojeg tijela povezanog s ESCO okvirom. " +
-      "Riječ je o rezultatu automatiziranog PoC prototipa temeljenog na pravilima (ključne riječi/obrasci), bez ekspertskog panela, " +
-      "bez psihometrijske validacije i bez treniranog ML modela iz metodologije H1/H2.",
-    10,
-    false
-  );
-  push(`Generirano: ${nowStr}`, 9, false);
-  push("", 10);
-
-  if (state.skill1) {
-    push(state.skill1.result.skill, 13, true);
-    push(`BARS ${state.skill1.result.levelName}`, 11, false);
-    push(`Izvor: ${state.skill1.indicators.fileName}`, 9, false, 0);
-    push("", 8);
-  }
-  if (state.skill2) {
-    push(state.skill2.result.skill, 13, true);
-    push(`BARS ${state.skill2.result.levelName}`, 11, false);
-    push(`Izvor: ${state.skill2.indicators.sourceName}`, 9, false, 0);
-    push("", 8);
-  }
-
-  if (state.skill1 || state.skill2) {
-    push("ESCO mapiranje", 13, true);
-    push(
-      "Oznake su navedene po imenu (verbatim iz BARS dokumenta), ne po ESCO URI-ju — vidi esco_mapping.py u repozitoriju.",
-      9,
-      false
-    );
-    const matches = mapToEsco(state.skill1, state.skill2);
-    for (const m of matches) {
-      push(`[${m.relevance}] ${m.labelEn}  (${m.labelHr})`, 10, false);
-      for (const e of m.evidence) push(`– ${e}`, 9, false, 14);
-    }
-  }
-
-  return lines;
+function certificateNowStr() {
+  return new Date().toISOString().slice(0, 16).replace("T", " ");
 }
 
 function buildCertificatePdfBytes() {
   const doc = new PdfDoc();
-  for (const l of buildCertificateContent(new Date().toISOString().slice(0, 16).replace("T", " "))) {
-    if (l.text === "") doc.addSpacer(l.size);
-    else doc.addText(l.text, l.size, l.bold, l.indent);
+  const headerH = 100;
+  const topY = doc.pageHeight;
+
+  doc.addRect(0, topY - headerH, doc.pageWidth, headerH, PDF_COLORS.navy);
+  const mark = pdfMarkPolygonsAt(doc.marginLeft, topY - headerH + 33, 34);
+  doc.addPolygon(mark.left, PDF_COLORS.white);
+  doc.addPolygon(mark.right, PDF_COLORS.greenSoft);
+  doc.addTextAt("MERIFIC", doc.marginLeft + mark.width + 16, topY - headerH + 52, 22, true, PDF_COLORS.white);
+  doc.addTextAt("Sažetak samoprocjene — PoC prototip", doc.marginLeft + mark.width + 16, topY - headerH + 34, 11, false, [0.85, 0.88, 0.95]);
+
+  doc.cursorY = topY - headerH - 26;
+
+  const discTopY = doc.cursorY;
+  doc.addRect(doc.marginLeft, discTopY - 54, doc.pageWidth - doc.marginLeft - doc.marginRight, 54, PDF_COLORS.amberSoft);
+  doc.cursorY = discTopY - 12;
+  doc.addText(
+    "Ovo NIJE službena kvalifikacija niti potvrda Europske komisije ili bilo kojeg tijela povezanog s ESCO okvirom.",
+    9.5, true, 12, PDF_COLORS.amber
+  );
+  doc.addText(
+    "Rezultat automatiziranog PoC prototipa temeljenog na pravilima (ključne riječi/obrasci), bez ekspertskog panela, bez psihometrijske validacije i bez treniranog ML modela iz metodologije H1/H2.",
+    9, false, 12, PDF_COLORS.amber
+  );
+  doc.cursorY = discTopY - 54 - 22;
+  doc.addText(`Generirano: ${certificateNowStr()}`, 8.5, false, 0, PDF_COLORS.inkFaint);
+  doc.addSpacer(14);
+
+  function sectionHeader(title) {
+    doc.addRect(doc.marginLeft, doc.cursorY - 4, 3, 16, PDF_COLORS.green);
+    doc.addText(title, 13, true, 12, PDF_COLORS.ink);
+    doc.cursorY -= 6;
   }
+  function badgeLine(label, color) {
+    const w = 9 + label.length * 5.6;
+    doc.addRect(doc.marginLeft, doc.cursorY - 3, w, 14, color);
+    doc.addTextAt(label, doc.marginLeft + 5, doc.cursorY, 8.5, true, PDF_COLORS.white);
+    doc.cursorY -= 20;
+  }
+  const relColor = (rel) => (rel === REL_STRONG ? PDF_COLORS.green : rel === REL_PARTIAL ? PDF_COLORS.amber : PDF_COLORS.grey);
+
+  if (state.skill1) {
+    sectionHeader(state.skill1.result.skill);
+    badgeLine(`RAZINA ${state.skill1.result.level}`, PDF_COLORS.green);
+    doc.addText(state.skill1.result.levelName.split("—")[1].trim(), 10.5, false, 0, PDF_COLORS.inkSoft);
+    doc.addText(`Izvor: ${state.skill1.indicators.fileName}`, 9, false, 0, PDF_COLORS.inkFaint);
+    doc.addSpacer(16);
+  }
+  if (state.skill2) {
+    sectionHeader(state.skill2.result.skill);
+    badgeLine(`RAZINA ${state.skill2.result.level}`, PDF_COLORS.green);
+    doc.addText(state.skill2.result.levelName.split("—")[1].trim(), 10.5, false, 0, PDF_COLORS.inkSoft);
+    doc.addText(`Izvor: ${state.skill2.indicators.sourceName}`, 9, false, 0, PDF_COLORS.inkFaint);
+    doc.addSpacer(18);
+  }
+
+  if (state.skill1 || state.skill2) {
+    sectionHeader("ESCO mapiranje");
+    doc.addText("Oznake su navedene po imenu (verbatim iz BARS dokumenta), ne po ESCO URI-ju.", 9, false, 0, PDF_COLORS.inkFaint);
+    doc.addSpacer(8);
+    for (const m of mapToEsco(state.skill1, state.skill2)) {
+      badgeLine(m.relevance.toUpperCase(), relColor(m.relevance));
+      doc.addText(m.labelEn, 10, true, 0, PDF_COLORS.ink);
+      doc.addText(m.labelHr, 9, false, 0, PDF_COLORS.inkFaint);
+      for (const e of m.evidence) doc.addText(`– ${e}`, 8.5, false, 14, PDF_COLORS.inkSoft);
+      doc.addSpacer(8);
+    }
+  }
+
+  doc.addFooterToAllPages("Merific · pravilima utemeljen PoC prototip · nije priznata kvalifikacija");
   return doc.build();
 }
 
 function buildCertificateTextFallback() {
-  const out = [];
-  for (const l of buildCertificateContent(new Date().toISOString().slice(0, 16).replace("T", " "))) {
-    if (l.text === "") out.push("");
-    else out.push((l.indent ? " ".repeat(Math.round(l.indent / 3)) : "") + l.text);
+  const out = ["MERIFIC — Sažetak samoprocjene (PoC prototip)", ""];
+  out.push(
+    "Ovo NIJE službena kvalifikacija niti potvrda Europske komisije ili bilo kojeg tijela povezanog s ESCO okvirom. " +
+      "Rezultat automatiziranog PoC prototipa temeljenog na pravilima, bez ekspertskog panela i bez treniranog ML modela."
+  );
+  out.push(`Generirano: ${certificateNowStr()}`, "");
+
+  if (state.skill1) {
+    out.push(state.skill1.result.skill, `BARS ${state.skill1.result.levelName}`, `Izvor: ${state.skill1.indicators.fileName}`, "");
+  }
+  if (state.skill2) {
+    out.push(state.skill2.result.skill, `BARS ${state.skill2.result.levelName}`, `Izvor: ${state.skill2.indicators.sourceName}`, "");
+  }
+  if (state.skill1 || state.skill2) {
+    out.push("ESCO mapiranje (naziv, ne ESCO URI):");
+    for (const m of mapToEsco(state.skill1, state.skill2)) {
+      out.push(`[${m.relevance}] ${m.labelEn}  (${m.labelHr})`);
+      for (const e of m.evidence) out.push(`    – ${e}`);
+    }
   }
   return out.join("\n");
 }
