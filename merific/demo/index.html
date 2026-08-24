@@ -484,8 +484,9 @@
   <header class="top">
     <div class="brand">
       <svg class="mark" width="30" height="30" viewBox="0 0 64 64" aria-hidden="true">
-        <polygon points="6,50 6,10 16,10 32,34 32,50" fill="var(--blue)" />
-        <polygon points="32,34 48,10 58,10 58,50 48,50 48,24 32,50" fill="var(--green)" />
+        <rect x="2" y="2" width="60" height="60" rx="14" fill="#2f4fa8" stroke="#c0272d" stroke-width="3" />
+        <polygon points="14,46 14,17 21,17 32,32 32,46" fill="#ffffff" />
+        <polygon points="32,32 43,17 50,17 50,46 43,46 43,26 32,46" fill="#7fe3c8" />
       </svg>
       <h1>Merific</h1>
       <span class="tag">PoC · BARS analizator</span>
@@ -1276,9 +1277,10 @@ function pdfWrapText(text, size, bold, maxWidth) {
 }
 
 const PDF_COLORS = {
-  navy: [0.165, 0.306, 0.612], // --blue
+  navy: [0.184, 0.310, 0.659], // mark/masthead navy, #2f4fa8
+  red: [0.753, 0.153, 0.176], // mark border, #c0272d
+  mint: [0.498, 0.890, 0.784], // mark right stroke, #7fe3c8
   green: [0.122, 0.478, 0.298], // --green
-  greenSoft: [0.882, 0.941, 0.902], // --green-soft
   amber: [0.651, 0.396, 0.047], // --amber
   amberSoft: [0.961, 0.914, 0.839], // --amber-soft
   grey: [0.827, 0.855, 0.808], // --rule
@@ -1288,25 +1290,51 @@ const PDF_COLORS = {
   white: [1, 1, 1],
 };
 
-// same "M" mark as the inline SVG in the page header, in local (y-up) units
-const PDF_MARK_LEFT_LOCAL = [6, 10, 6, 50, 16, 50, 32, 26, 32, 10];
-const PDF_MARK_RIGHT_LOCAL = [32, 26, 48, 50, 58, 50, 58, 10, 48, 10, 48, 36, 32, 10];
-function pdfMarkPolygonsAt(x0, y0, heightPt) {
-  const scale = heightPt / 40;
-  const tx = (lx) => x0 + (lx - 6) * scale;
-  const ty = (ly) => y0 + (ly - 10) * scale;
+// same "M" mark as the inline SVG in the page header, in local (0..64, y-up) units
+const PDF_MARK_RECT = { x: 2, y: 2, w: 60, h: 60, r: 14 };
+const PDF_MARK_LEFT_LOCAL = [14, 18, 14, 47, 21, 47, 32, 32, 32, 18];
+const PDF_MARK_RIGHT_LOCAL = [32, 32, 43, 47, 50, 47, 50, 18, 43, 18, 43, 38, 32, 18];
+function pdfMarkAt(x0, y0, sizePt) {
+  const scale = sizePt / 64;
+  const tx = (lx) => x0 + lx * scale;
+  const ty = (ly) => y0 + ly * scale;
   const xf = (pts) => { const out = []; for (let i = 0; i < pts.length; i += 2) out.push(tx(pts[i]), ty(pts[i + 1])); return out; };
-  return { left: xf(PDF_MARK_LEFT_LOCAL), right: xf(PDF_MARK_RIGHT_LOCAL), width: 52 * scale };
+  return {
+    rect: {
+      x: x0 + PDF_MARK_RECT.x * scale, y: y0 + PDF_MARK_RECT.y * scale,
+      w: PDF_MARK_RECT.w * scale, h: PDF_MARK_RECT.h * scale, r: PDF_MARK_RECT.r * scale,
+      lineWidth: 3 * scale,
+    },
+    left: xf(PDF_MARK_LEFT_LOCAL),
+    right: xf(PDF_MARK_RIGHT_LOCAL),
+  };
+}
+function pdfRoundedRectPathOps(x, y, w, h, r) {
+  const k = r * 0.5523;
+  return [
+    `${(x + r).toFixed(2)} ${y.toFixed(2)} m`,
+    `${(x + w - r).toFixed(2)} ${y.toFixed(2)} l`,
+    `${(x + w - r + k).toFixed(2)} ${y.toFixed(2)} ${(x + w).toFixed(2)} ${(y + r - k).toFixed(2)} ${(x + w).toFixed(2)} ${(y + r).toFixed(2)} c`,
+    `${(x + w).toFixed(2)} ${(y + h - r).toFixed(2)} l`,
+    `${(x + w).toFixed(2)} ${(y + h - r + k).toFixed(2)} ${(x + w - r + k).toFixed(2)} ${(y + h).toFixed(2)} ${(x + w - r).toFixed(2)} ${(y + h).toFixed(2)} c`,
+    `${(x + r).toFixed(2)} ${(y + h).toFixed(2)} l`,
+    `${(x + r - k).toFixed(2)} ${(y + h).toFixed(2)} ${x.toFixed(2)} ${(y + h - r + k).toFixed(2)} ${x.toFixed(2)} ${(y + h - r).toFixed(2)} c`,
+    `${x.toFixed(2)} ${(y + r).toFixed(2)} l`,
+    `${x.toFixed(2)} ${(y + r - k).toFixed(2)} ${(x + r - k).toFixed(2)} ${y.toFixed(2)} ${(x + r).toFixed(2)} ${y.toFixed(2)} c`,
+    "h",
+  ];
 }
 
 class PdfDoc {
   constructor() {
     this.pageWidth = 595; // A4, points
     this.pageHeight = 842;
-    this.marginLeft = 56;
-    this.marginRight = 56;
-    this.marginTop = 785;
-    this.marginBottom = 64;
+    this.frameOuter = 28;
+    this.frameInner = 34;
+    this.marginLeft = 62;
+    this.marginRight = 62;
+    this.marginTop = 730;
+    this.marginBottom = 74;
     this.pages = [[]];
     this.cursorY = this.marginTop;
   }
@@ -1318,8 +1346,15 @@ class PdfDoc {
     }
   }
   addRect(x, y, w, h, color) { this._cur().push({ type: "rect", x, y, w, h, color }); }
+  addRectOutline(x, y, w, h, color, lineWidth) { this._cur().push({ type: "rectOutline", x, y, w, h, color, lineWidth }); }
+  addRoundedRectFillStroke(x, y, w, h, r, fill, stroke, lineWidth) {
+    this._cur().push({ type: "roundrect", x, y, w, h, r, fill, stroke, lineWidth });
+  }
   addPolygon(points, color) { this._cur().push({ type: "poly", points, color }); }
   addTextAt(text, x, y, size, bold, color) { this._cur().push({ type: "text", text, x, y, size, bold: !!bold, color }); }
+  addTextCentered(text, cx, y, size, bold, color, letterSpacing) {
+    this._cur().push({ type: "textc", text, cx, y, size, bold: !!bold, color, letterSpacing: letterSpacing || 0 });
+  }
   addText(text, size, bold, indent, color) {
     indent = indent || 0;
     const lineHeight = size * 1.4;
@@ -1330,6 +1365,14 @@ class PdfDoc {
       this.cursorY -= lineHeight;
     }
   }
+  addTextBlockCentered(text, size, bold, color, maxWidth) {
+    const lineHeight = size * 1.4;
+    for (const line of pdfWrapText(text, size, !!bold, maxWidth)) {
+      this._ensureSpace(lineHeight);
+      this._cur().push({ type: "textc", text: line, cx: this.pageWidth / 2, y: this.cursorY, size, bold: !!bold, color });
+      this.cursorY -= lineHeight;
+    }
+  }
   addSpacer(h) {
     this.cursorY -= h;
     if (this.cursorY < this.marginBottom) {
@@ -1337,10 +1380,14 @@ class PdfDoc {
       this.cursorY = this.marginTop;
     }
   }
-  addFooterToAllPages(text) {
+  addFrameAndFooterToAllPages(footerText) {
     for (const page of this.pages) {
-      page.push({ type: "rect", x: this.marginLeft, y: 44, w: this.pageWidth - this.marginLeft - this.marginRight, h: 0.75, color: PDF_COLORS.grey });
-      page.push({ type: "text", text, x: this.marginLeft, y: 28, size: 8.5, bold: false, color: PDF_COLORS.inkFaint });
+      page.unshift(
+        { type: "rectOutline", x: this.frameOuter, y: this.frameOuter, w: this.pageWidth - 2 * this.frameOuter, h: this.pageHeight - 2 * this.frameOuter, color: PDF_COLORS.navy, lineWidth: 1.3 },
+        { type: "rectOutline", x: this.frameInner, y: this.frameInner, w: this.pageWidth - 2 * this.frameInner, h: this.pageHeight - 2 * this.frameInner, color: PDF_COLORS.grey, lineWidth: 0.6 },
+        { type: "rect", x: this.frameInner + 6, y: 52, w: this.pageWidth - 2 * (this.frameInner + 6), h: 0.6, color: PDF_COLORS.grey },
+        { type: "textc", text: footerText, cx: this.pageWidth / 2, y: 40, size: 8.5, bold: false, color: PDF_COLORS.inkFaint }
+      );
     }
   }
   build() {
@@ -1359,19 +1406,44 @@ class PdfDoc {
       };
       const opBytes = [];
       for (const item of this.pages[i]) {
-        const c = item.color || PDF_COLORS.ink;
-        pdfPushAscii(opBytes, `${c[0].toFixed(3)} ${c[1].toFixed(3)} ${c[2].toFixed(3)} rg\n`);
         if (item.type === "rect") {
+          pdfPushAscii(opBytes, `${item.color[0].toFixed(3)} ${item.color[1].toFixed(3)} ${item.color[2].toFixed(3)} rg\n`);
           pdfPushAscii(opBytes, `${item.x.toFixed(2)} ${item.y.toFixed(2)} ${item.w.toFixed(2)} ${item.h.toFixed(2)} re f\n`);
+        } else if (item.type === "rectOutline") {
+          pdfPushAscii(opBytes, `${item.color[0].toFixed(3)} ${item.color[1].toFixed(3)} ${item.color[2].toFixed(3)} RG\n`);
+          pdfPushAscii(opBytes, `${item.lineWidth} w\n`);
+          pdfPushAscii(opBytes, `${item.x.toFixed(2)} ${item.y.toFixed(2)} ${item.w.toFixed(2)} ${item.h.toFixed(2)} re S\n`);
+        } else if (item.type === "roundrect") {
+          pdfPushAscii(opBytes, `${item.fill[0].toFixed(3)} ${item.fill[1].toFixed(3)} ${item.fill[2].toFixed(3)} rg\n`);
+          pdfPushAscii(opBytes, `${item.stroke[0].toFixed(3)} ${item.stroke[1].toFixed(3)} ${item.stroke[2].toFixed(3)} RG\n`);
+          pdfPushAscii(opBytes, `${item.lineWidth.toFixed(2)} w\n`);
+          for (const op of pdfRoundedRectPathOps(item.x, item.y, item.w, item.h, item.r)) pdfPushAscii(opBytes, op + "\n");
+          pdfPushAscii(opBytes, "B\n");
         } else if (item.type === "poly") {
+          pdfPushAscii(opBytes, `${item.color[0].toFixed(3)} ${item.color[1].toFixed(3)} ${item.color[2].toFixed(3)} rg\n`);
           const pts = item.points;
           pdfPushAscii(opBytes, `${pts[0].toFixed(2)} ${pts[1].toFixed(2)} m\n`);
           for (let k = 2; k < pts.length; k += 2) pdfPushAscii(opBytes, `${pts[k].toFixed(2)} ${pts[k + 1].toFixed(2)} l\n`);
           pdfPushAscii(opBytes, `h f\n`);
-        } else {
+        } else if (item.type === "text") {
+          const c = item.color || PDF_COLORS.ink;
+          pdfPushAscii(opBytes, `${c[0].toFixed(3)} ${c[1].toFixed(3)} ${c[2].toFixed(3)} rg\n`);
           pdfPushAscii(opBytes, "BT\n");
           pdfPushAscii(opBytes, `/${item.bold ? "F2" : "F1"} ${item.size} Tf\n`);
-          pdfPushAscii(opBytes, `1 0 0 1 ${item.x.toFixed(2)} ${item.y.toFixed(2)} Tm\n`);
+          pdfPushAscii(opBytes, `0 Tc\n`); // Tc/Tw persist across BT/ET (graphics state, not text-object
+          pdfPushAscii(opBytes, `1 0 0 1 ${item.x.toFixed(2)} ${item.y.toFixed(2)} Tm\n`); // state) -- always reset
+          pdfPushAscii(opBytes, "(");
+          opBytes.push(...pdfEscapedBytes(item.text));
+          pdfPushAscii(opBytes, ") Tj\nET\n");
+        } else if (item.type === "textc") {
+          const c = item.color || PDF_COLORS.ink;
+          const w = pdfTextWidthPts(item.text, item.size, item.bold) + (item.letterSpacing || 0) * Math.max(0, item.text.length - 1);
+          const x = item.cx - w / 2;
+          pdfPushAscii(opBytes, `${c[0].toFixed(3)} ${c[1].toFixed(3)} ${c[2].toFixed(3)} rg\n`);
+          pdfPushAscii(opBytes, "BT\n");
+          pdfPushAscii(opBytes, `/${item.bold ? "F2" : "F1"} ${item.size} Tf\n`);
+          pdfPushAscii(opBytes, `${item.letterSpacing || 0} Tc\n`); // always set explicitly, never inherited
+          pdfPushAscii(opBytes, `1 0 0 1 ${x.toFixed(2)} ${item.y.toFixed(2)} Tm\n`);
           pdfPushAscii(opBytes, "(");
           opBytes.push(...pdfEscapedBytes(item.text));
           pdfPushAscii(opBytes, ") Tj\nET\n");
@@ -1419,32 +1491,41 @@ function certificateNowStr() {
 
 function buildCertificatePdfBytes() {
   const doc = new PdfDoc();
-  const headerH = 100;
-  const topY = doc.pageHeight;
+  const cx = doc.pageWidth / 2;
 
-  doc.addRect(0, topY - headerH, doc.pageWidth, headerH, PDF_COLORS.navy);
-  const mark = pdfMarkPolygonsAt(doc.marginLeft, topY - headerH + 33, 34);
+  doc.cursorY = doc.pageHeight - doc.frameInner - 34;
+  const markSize = 46;
+  const mark = pdfMarkAt(cx - markSize / 2, doc.cursorY - markSize + 6, markSize);
+  doc.addRoundedRectFillStroke(mark.rect.x, mark.rect.y, mark.rect.w, mark.rect.h, mark.rect.r, PDF_COLORS.navy, PDF_COLORS.red, mark.rect.lineWidth);
   doc.addPolygon(mark.left, PDF_COLORS.white);
-  doc.addPolygon(mark.right, PDF_COLORS.greenSoft);
-  doc.addTextAt("MERIFIC", doc.marginLeft + mark.width + 16, topY - headerH + 52, 22, true, PDF_COLORS.white);
-  doc.addTextAt("Sažetak samoprocjene — PoC prototip", doc.marginLeft + mark.width + 16, topY - headerH + 34, 11, false, [0.85, 0.88, 0.95]);
+  doc.addPolygon(mark.right, PDF_COLORS.mint);
+  doc.cursorY -= markSize + 8;
 
-  doc.cursorY = topY - headerH - 26;
-
-  const discTopY = doc.cursorY;
-  doc.addRect(doc.marginLeft, discTopY - 54, doc.pageWidth - doc.marginLeft - doc.marginRight, 54, PDF_COLORS.amberSoft);
-  doc.cursorY = discTopY - 12;
-  doc.addText(
-    "Ovo NIJE službena kvalifikacija niti potvrda Europske komisije ili bilo kojeg tijela povezanog s ESCO okvirom.",
-    9.5, true, 12, PDF_COLORS.amber
-  );
-  doc.addText(
-    "Rezultat automatiziranog PoC prototipa temeljenog na pravilima (ključne riječi/obrasci), bez ekspertskog panela, bez psihometrijske validacije i bez treniranog ML modela iz metodologije H1/H2.",
-    9, false, 12, PDF_COLORS.amber
-  );
-  doc.cursorY = discTopY - 54 - 22;
-  doc.addText(`Generirano: ${certificateNowStr()}`, 8.5, false, 0, PDF_COLORS.inkFaint);
+  doc.addTextBlockCentered("MERIFIC", 24, true, PDF_COLORS.navy, 400);
+  doc.cursorY -= 2;
+  doc.addTextBlockCentered("Automatizirana samoprocjena kompetencija", 10.5, false, PDF_COLORS.inkSoft, 400);
   doc.addSpacer(14);
+  doc.addRect(cx - 90, doc.cursorY, 180, 1, PDF_COLORS.grey);
+  doc.addSpacer(22);
+
+  doc.addTextCentered("POTVRDA O SAMOPROCJENI", cx, doc.cursorY, 15, true, PDF_COLORS.ink, 1.6);
+  doc.cursorY -= 26;
+
+  const discW = doc.pageWidth - 2 * (doc.frameInner + 22);
+  const discX = doc.frameInner + 22;
+  doc.addRect(discX, doc.cursorY - 50, discW, 50, PDF_COLORS.amberSoft);
+  doc.cursorY -= 12;
+  doc.addTextBlockCentered(
+    "Ovo NIJE službena kvalifikacija niti potvrda Europske komisije ili tijela povezanog s ESCO okvirom.",
+    9.5, true, PDF_COLORS.amber, discW - 24
+  );
+  doc.addTextBlockCentered(
+    "Rezultat automatiziranog PoC prototipa temeljenog na pravilima, bez ekspertskog panela i treniranog ML modela.",
+    9, false, PDF_COLORS.amber, discW - 24
+  );
+  doc.cursorY -= 46;
+  doc.addTextBlockCentered(`Generirano: ${certificateNowStr()}`, 8.5, false, PDF_COLORS.inkFaint, 400);
+  doc.addSpacer(20);
 
   function sectionHeader(title) {
     doc.addRect(doc.marginLeft, doc.cursorY - 4, 3, 16, PDF_COLORS.green);
@@ -1487,7 +1568,7 @@ function buildCertificatePdfBytes() {
     }
   }
 
-  doc.addFooterToAllPages("Merific · pravilima utemeljen PoC prototip · nije priznata kvalifikacija");
+  doc.addFrameAndFooterToAllPages("Merific · pravilima utemeljen PoC prototip · nije priznata kvalifikacija");
   return doc.build();
 }
 
