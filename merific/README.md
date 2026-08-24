@@ -45,11 +45,24 @@ merific/
   bars_scoring.py    # rule-based BARS level 1-4 inference for Vještina 1
   report.py           # text / JSON rendering
   cli.py                # `python -m merific.cli analyze <file.xlsx>`
+demo/
+  index.html           # standalone browser demo — see below
 tests/
   fixtures/make_fixtures.py  # generates synthetic level1..level4 example workbooks
   test_indicators.py
   test_bars_scoring.py
 ```
+
+## Browser demo
+
+`demo/index.html` is a self-contained, dependency-free re-implementation of
+`indicators.py` + `bars_scoring.py` in JavaScript (own ZIP/OOXML reader —
+`DecompressionStream`, `DOMParser`, no libraries), so it runs entirely
+client-side: open the file in a browser, drop in an `.xlsx`, or click one
+of the four embedded samples, and see the BARS level with its evidence.
+Nothing is uploaded anywhere. It is a UI for the same rules as the Python
+package, kept in sync by hand — not generated from it — so treat the two
+as needing to be updated together.
 
 ## Indicators extracted
 
