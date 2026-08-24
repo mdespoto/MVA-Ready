@@ -342,6 +342,123 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   footer.credit { margin-top: 30px; font-size: 11.5px; color: var(--ink-faint); text-align: center; }
+
+  /* --- skill tabs --- */
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 16px; }
+  .tab-btn {
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  }
+  .tab-btn:hover, .tab-btn:focus-visible { border-color: var(--blue); }
+  .tab-btn.active { background: var(--blue-soft); border-color: var(--blue); color: var(--ink); }
+  .tab-panel.hidden { display: none; }
+
+  .textarea-input {
+    width: 100%;
+    min-height: 130px;
+    resize: vertical;
+    border: 1.5px dashed var(--rule-strong);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 12px;
+  }
+  .textarea-input:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; border-color: var(--blue); }
+  .textarea-input::placeholder { color: var(--ink-faint); }
+
+  .primary-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--blue);
+    background: var(--blue-soft);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+  .primary-btn:hover { background: color-mix(in srgb, var(--blue-soft) 60%, var(--blue) 20%); }
+  .primary-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .text-dropzone-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .text-dropzone-row .or { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; }
+  .file-chip {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+  .file-chip:hover, .file-chip:focus-visible { border-color: var(--blue); background: var(--blue-soft); }
+
+  /* --- skill status pills above a result --- */
+  .skill-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .skill-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--rule);
+    color: var(--ink-faint);
+  }
+  .skill-pill.active { border-color: var(--blue); color: var(--ink); background: var(--blue-soft); }
+  .skill-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--rule-strong); }
+  .skill-pill.active .dot { background: var(--blue); }
+
+  /* --- ESCO mapping --- */
+  .esco-section { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--rule); }
+  .esco-section h3 { font-size: 15px; margin-bottom: 4px; }
+  .esco-section .esco-hint { font-size: 12px; color: var(--ink-faint); margin: 0 0 14px; max-width: 62ch; line-height: 1.5; }
+  .esco-grid { display: grid; gap: 8px; }
+  .esco-card {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: var(--paper);
+  }
+  .esco-rel {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.02em;
+    padding: 3px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+    margin-top: 1px;
+  }
+  .esco-rel.jaka { background: var(--green-soft); color: var(--green); }
+  .esco-rel.djelomicna { background: var(--amber-soft); color: var(--amber); }
+  .esco-rel.nema-dokaza { background: transparent; color: var(--ink-faint); border: 1px solid var(--rule); }
+  .esco-body .label-en { font-size: 13px; font-weight: 500; }
+  .esco-body .label-hr { font-size: 11.5px; color: var(--ink-faint); margin-left: 4px; }
+  .esco-body ul { margin: 4px 0 0; padding-left: 16px; font-size: 12px; color: var(--ink-soft); display: grid; gap: 2px; }
 </style>
 
 <div class="shell">
@@ -350,40 +467,74 @@
       <h1>Merific</h1>
       <span class="tag">PoC · BARS analizator</span>
     </div>
-    <p>Automatska procjena razine kompetencije "Modeliranje financijskih tablica" iz strukture i formula Excel/Sheets modela — po BARS ljestvici (razine 1–4).</p>
+    <p>Automatska procjena BARS razine (1–4) za dvije vještine: modeliranje financijskih tablica (Excel/Sheets) i analitička interpretacija nalaza (memo/izvještaj) — plus mapiranje na ESCO vještine.</p>
   </header>
 
   <div class="layout">
     <div class="panel input-panel">
-      <h2>Analiziraj model</h2>
-      <p class="hint">Datoteka se obrađuje u pregledniku — ništa se ne šalje na server.</p>
-
-      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Učitaj Excel datoteku">
-        <div class="icon">📄</div>
-        <div class="label">Ispusti .xlsx ovdje ili klikni</div>
-        <div class="sub">.xlsx / .xlsm</div>
-        <input type="file" id="fileInput" accept=".xlsx,.xlsm" />
-      </div>
-      <div class="filemeta" id="fileMeta"></div>
-
-      <div class="divider-label">ili isprobaj primjer</div>
-      <div class="samples" id="sampleButtons">
-        <button class="sample-btn" data-level="1"><span>Razina 1 — jednokratna tablica</span><span class="n">1</span></button>
-        <button class="sample-btn" data-level="2"><span>Razina 2 — operativni model</span><span class="n">2</span></button>
-        <button class="sample-btn" data-level="3"><span>Razina 3 — samostalan analitičar</span><span class="n">3</span></button>
-        <button class="sample-btn" data-level="4"><span>Razina 4 — napredno modeliranje</span><span class="n">4</span></button>
+      <div class="tabs">
+        <button class="tab-btn active" id="tabBtnExcel" data-tab="excel">📊 Tablica — Vještina 1</button>
+        <button class="tab-btn" id="tabBtnText" data-tab="text">📝 Tekst — Vještina 2</button>
       </div>
 
-      <div class="scope-note">
-        <strong>Opseg prototipa:</strong> pravilima utemeljen bodovač sadržajnih indikatora (arhitektura listova, formulna kompleksnost) za Vještinu 1 iz BARS dokumenta. Ne uključuje procesne indikatore, ESCO mapiranje, AI-integrity provjeru ni trenirani ML model iz H1/H2 — ti dijelovi zahtijevaju infrastrukturu i ekspertski označen korpus koji ovaj prototip nema.
+      <div class="tab-panel" id="tabExcel">
+        <h2>Analiziraj model</h2>
+        <p class="hint">Datoteka se obrađuje u pregledniku — ništa se ne šalje na server.</p>
+
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Učitaj Excel datoteku">
+          <div class="icon">📄</div>
+          <div class="label">Ispusti .xlsx ovdje ili klikni</div>
+          <div class="sub">.xlsx / .xlsm</div>
+          <input type="file" id="fileInput" accept=".xlsx,.xlsm" />
+        </div>
+        <div class="filemeta" id="fileMeta"></div>
+
+        <div class="divider-label">ili isprobaj primjer</div>
+        <div class="samples" id="sampleButtons">
+          <button class="sample-btn" data-level="1"><span>Razina 1 — jednokratna tablica</span><span class="n">1</span></button>
+          <button class="sample-btn" data-level="2"><span>Razina 2 — operativni model</span><span class="n">2</span></button>
+          <button class="sample-btn" data-level="3"><span>Razina 3 — samostalan analitičar</span><span class="n">3</span></button>
+          <button class="sample-btn" data-level="4"><span>Razina 4 — napredno modeliranje</span><span class="n">4</span></button>
+        </div>
+
+        <div class="scope-note">
+          <strong>Opseg prototipa:</strong> pravilima utemeljen bodovač sadržajnih indikatora (arhitektura listova, formulna kompleksnost) za Vještinu 1 iz BARS dokumenta. Ne uključuje procesne indikatore, semantičku NLP analizu, AI-integrity provjeru ni trenirani ML model iz H1/H2 — ti dijelovi zahtijevaju infrastrukturu i ekspertski označen korpus koji ovaj prototip nema.
+        </div>
+      </div>
+
+      <div class="tab-panel hidden" id="tabText">
+        <h2>Analiziraj tekst</h2>
+        <p class="hint">Zalijepi tekst memoranduma/izvještaja, ili ubaci .docx/.txt — sve u pregledniku.</p>
+
+        <textarea class="textarea-input" id="textInput" placeholder="Zalijepi ovdje tekst analitičkog izvještaja ili memoranduma…"></textarea>
+        <button class="primary-btn" id="analyzeTextBtn">Analiziraj tekst</button>
+
+        <div class="text-dropzone-row">
+          <span class="or">ili</span>
+          <label class="file-chip" for="textFileInput">📄 Ubaci .docx / .txt</label>
+          <input type="file" id="textFileInput" accept=".docx,.txt" />
+        </div>
+        <div class="filemeta" id="textFileMeta"></div>
+
+        <div class="divider-label">ili isprobaj primjer</div>
+        <div class="samples" id="textSampleButtons">
+          <button class="sample-btn" data-level="1"><span>Razina 1 — opisni izvjestitelj</span><span class="n">1</span></button>
+          <button class="sample-btn" data-level="2"><span>Razina 2 — kontekstualni analitičar</span><span class="n">2</span></button>
+          <button class="sample-btn" data-level="3"><span>Razina 3 — samostalan analitičar</span><span class="n">3</span></button>
+          <button class="sample-btn" data-level="4"><span>Razina 4 — strateški savjetnik</span><span class="n">4</span></button>
+        </div>
+
+        <div class="scope-note">
+          <strong>Opseg prototipa:</strong> ključne riječi/obrasci nad tekstom (usporedba s benchmarkom, uzročni jezik, scenariji, osjetljivosna analiza…) za Vještinu 2. Nije semantičko NLP (BERT) razumijevanje teksta iz metodologije — vidi <span class="mono">merific/text_indicators.py</span> u repozitoriju.
+        </div>
       </div>
     </div>
 
     <div class="panel results-panel" id="resultsPanel">
       <div class="empty-state" id="emptyState">
         <div class="ladder-glyph"><span></span><span></span><span></span></div>
-        <h3>Nema učitanog modela</h3>
-        <p>Učitaj svoju Excel datoteku ili odaberi jedan od četiri primjera da vidiš procijenjenu BARS razinu i dokaze na kojima se temelji.</p>
+        <h3>Nema analiziranog materijala</h3>
+        <p>Učitaj Excel model ili tekst izvještaja (ili odaberi jedan od primjera) da vidiš procijenjenu BARS razinu, dokaze i ESCO mapiranje.</p>
       </div>
     </div>
   </div>
@@ -805,6 +956,237 @@ function scoreSkill1(m) {
   return { skill: "Vještina 1: Modeliranje financijskih tablica", level, levelName: LEVEL_NAMES[level], checks, gapToNextLevel: gap };
 }
 
+/* ============================== text_indicators.py, ported ============================== */
+
+const BENCHMARK_KEYWORDS = ["plan", "budžet", "prosjek", "prethodn", "prošl", "cilj", "target", "benchmark", "u odnosu na", "industrij"];
+const CAUSAL_KEYWORDS = ["zbog", "uzrok", "razlog", "posljedic", "rezultat toga", "utjecaj", "proizlazi", "uslijed", "dovodi do", "vodi do"];
+const CONTRAST_PATTERNS = [
+  /nije\s+\w+(\s+\w+){0,4}\s+nego/i,
+  /ne\s+zbog[\s\S]{0,80}nego/i,
+  /a\s+ne\s+zbog/i,
+  /simptom[\s\S]{0,120}uzrok/i,
+  /za razliku od/i,
+];
+const RECOMMENDATION_KEYWORDS = ["preporuč", "predlaž", "potrebno je", "sljedeći korak", "akcijski plan"];
+const SCENARIO_KEYWORDS = ["scenarij", "best case", "worst case", "base case", "neizvjesnost", "raspon ishoda", "rizik"];
+const STRUCTURE_KEYWORDS = ["zaključak", "sažetak", "preporuka", "nalaz", "ključna poruka"];
+const SENSITIVITY_KEYWORDS = ["osjetljivost", "osjetljivosna", "diskontna stopa", "terminalni rast", "mijenja predznak", "prag osjetljivosti", "tipping point", "threshold"];
+const AUDIENCE_KEYWORDS = ["uprav", "cfo", "investitor", "operativni tim", "operativnom timu", "nefinancijsk"];
+const DATA_QUALITY_KEYWORDS = ["ograničenj", "nedovoljno pouzdan", "nedovoljne pouzdanosti", "nije moguće sa sigurnošću", "nisku pouzdanost", "nedostatn"];
+const STRATEGIC_CONTEXT_KEYWORDS = ["strateš", "operativn", "konkurent", "tržišt"];
+const FINANCE_VOCAB = ["ebitda", "cash-flow", "cash flow", "novčani tok", "marža", "marže", "prihod", "trošak", "dobit", "roe", "povrat na kapital", "tržišni udio", "npv", "dcf", "wacc"];
+
+const NUMERIC_TOKEN_RE = /\d+(?:[.,]\d+)?\s?%?/g;
+const BAD_CHART_RE = /tortni grafikon/i;
+const TREND_WORDS_RE = /trend|kroz vrijeme|tijekom/i;
+
+function countDistinctHits(text, keywords) {
+  const lt = text.toLowerCase();
+  return keywords.reduce((n, kw) => n + (lt.includes(kw.toLowerCase()) ? 1 : 0), 0);
+}
+function anyHit(text, keywords) { return countDistinctHits(text, keywords) > 0; }
+
+function extractTextIndicators(text, sourceName) {
+  let paragraphs = text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  if (!paragraphs.length) paragraphs = text.split(/\n/).map((p) => p.trim()).filter(Boolean);
+
+  const conclusionParagraphHasNumber = paragraphs.some(
+    (p) => anyHit(p, [...STRUCTURE_KEYWORDS, ...RECOMMENDATION_KEYWORDS]) && NUMERIC_TOKEN_RE.test(p)
+  );
+  const badChart = BAD_CHART_RE.test(text) && TREND_WORDS_RE.test(text);
+
+  return {
+    sourceName,
+    nWords: text.split(/\s+/).filter(Boolean).length,
+    nParagraphs: paragraphs.length,
+    hasBenchmarkLanguage: anyHit(text, BENCHMARK_KEYWORDS),
+    hasCausalLanguage: anyHit(text, CAUSAL_KEYWORDS),
+    hasContrastPattern: CONTRAST_PATTERNS.some((re) => re.test(text)),
+    nNumericTokens: (text.match(NUMERIC_TOKEN_RE) || []).length,
+    hasRecommendationLanguage: anyHit(text, RECOMMENDATION_KEYWORDS),
+    hasScenarioLanguage: anyHit(text, SCENARIO_KEYWORDS),
+    hasStructureMarkers: anyHit(text, STRUCTURE_KEYWORDS),
+    conclusionParagraphHasNumber,
+    hasSensitivityLanguage: anyHit(text, SENSITIVITY_KEYWORDS),
+    nDistinctAudienceKeywords: countDistinctHits(text, AUDIENCE_KEYWORDS),
+    hasDataQualityLanguage: anyHit(text, DATA_QUALITY_KEYWORDS),
+    hasStrategicContextLanguage: anyHit(text, STRATEGIC_CONTEXT_KEYWORDS),
+    nDistinctFinanceTerms: countDistinctHits(text, FINANCE_VOCAB),
+    hasPoorChartChoiceFlag: badChart,
+  };
+}
+
+/* ============================== bars_scoring.py Skill 2, ported ============================== */
+
+const SKILL2_LEVEL_NAMES = {
+  1: "Razina 1 — Opisni izvjestitelj",
+  2: "Razina 2 — Kontekstualni analitičar",
+  3: "Razina 3 — Samostalan analitičar (ciljna razina)",
+  4: "Razina 4 — Napredni analitičar / strateški savjetnik",
+};
+
+function checkSkill2Level2(t) {
+  const c = mkCheck(2);
+  (t.hasBenchmarkLanguage ? c.satisfied : c.missing).push("usporedba s benchmarkom (plan, prošla godina, prosjek)");
+  (t.hasCausalLanguage ? c.satisfied : c.missing).push("objašnjava uzrok odstupanja");
+  (t.nNumericTokens >= 2 ? c.satisfied : c.missing).push("kvantificirani podaci (>= 2 broja/postotka)");
+  (t.nDistinctFinanceTerms >= 2 ? c.satisfied : c.missing).push("domenski financijski vokabular (>= 2 pojma)");
+  return c;
+}
+
+function checkSkill2Level3(t) {
+  const c = mkCheck(3);
+  (t.hasStructureMarkers ? c.satisfied : c.missing).push("struktura: ključna poruka / sažetak / zaključak / preporuka");
+  (t.hasRecommendationLanguage ? c.satisfied : c.missing).push("akcijski orijentirana preporuka");
+  (t.hasScenarioLanguage ? c.satisfied : c.missing).push("scenarijska analiza / eksplicitna neizvjesnost");
+  (t.conclusionParagraphHasNumber ? c.satisfied : c.missing).push("kvantificirana implikacija u istom odlomku kao zaključak/preporuka");
+  (t.hasContrastPattern ? c.satisfied : c.missing).push("eksplicitno razlikuje simptom od uzroka");
+  (t.nDistinctFinanceTerms >= 4 ? c.satisfied : c.missing).push("veća gustoća financijskog vokabulara (>= 4 pojma)");
+  return c;
+}
+
+function checkSkill2Level4(t) {
+  const c = mkCheck(4);
+  (t.hasSensitivityLanguage ? c.satisfied : c.missing).push("osjetljivosna analiza / prag na kojem se zaključak mijenja");
+  (t.nDistinctAudienceKeywords >= 2 ? c.satisfied : c.missing).push("komunikacija prilagođena >= 2 različite publike (uprava/CFO/investitori/operativni tim)");
+  (t.hasDataQualityLanguage ? c.satisfied : c.missing).push("eksplicitno priznaje ograničenja kvalitete podataka");
+  (t.hasStrategicContextLanguage ? c.satisfied : c.missing).push("integrira strateški/operativni/tržišni kontekst uz financijsku analizu");
+  return c;
+}
+
+const SKILL2_LEVEL2_RATIO = 0.5;
+
+function scoreSkill2(t) {
+  const checks = { 2: checkSkill2Level2(t), 3: checkSkill2Level3(t), 4: checkSkill2Level4(t) };
+  // Level 2 needs a mandatory causal-language gate on top of the ratio -- see
+  // the matching comment in bars_scoring.py (_SKILL2_LEVEL2_RATIO): the BARS
+  // document's own Level-1 example already has numbers and finance vocab, so
+  // those two checks alone can't be what promotes a text to Level 2.
+  let level = 1;
+  if (t.hasCausalLanguage && checkScore(checks[2]) >= SKILL2_LEVEL2_RATIO) {
+    level = 2;
+    if (checkScore(checks[3]) >= PASS_THRESHOLD[3]) {
+      level = 3;
+      if (checkScore(checks[4]) >= PASS_THRESHOLD[4]) level = 4;
+    }
+  }
+  const nextLevel = level + 1;
+  const gap = checks[nextLevel] ? checks[nextLevel].missing.slice() : [];
+  return {
+    skill: "Vještina 2: Analitička interpretacija i komunikacija financijskih nalaza",
+    level,
+    levelName: SKILL2_LEVEL_NAMES[level],
+    checks,
+    gapToNextLevel: gap,
+  };
+}
+
+/* ============================== esco_mapping.py, ported ============================== */
+/* Labels are verbatim from the BARS document header. No ESCO concept URIs:
+   ec.europa.eu and esco.ec.europa.eu are blocked by this environment's
+   network egress, so real IDs couldn't be verified -- see esco_mapping.py. */
+
+const ESCO_LABELS = {
+  use_spreadsheet_software: ["use spreadsheet software", "korištenje softvera za proračunske tablice"],
+  analyse_financial_data: ["analyse financial data", "analiza financijskih podataka"],
+  develop_financial_models: ["develop financial models", "razvoj financijskih modela"],
+  manage_data_content: ["manage data, information and digital content", "upravljanje podacima, informacijama i digitalnim sadržajem"],
+  communicate_findings: ["communicate findings to stakeholders", "komunikacija nalaza dionicima"],
+};
+const REL_NONE = "nema dokaza", REL_PARTIAL = "djelomična", REL_STRONG = "jaka";
+
+function escoMatch(key, relevance, evidence) {
+  const [labelEn, labelHr] = ESCO_LABELS[key];
+  return { key, labelEn, labelHr, relevance, evidence };
+}
+
+function escoFromSkill1(indicators, result) {
+  const s = indicators.structural, f = indicators.formula, level = result.level;
+  const matches = [];
+
+  matches.push(escoMatch("use_spreadsheet_software", level >= 2 ? REL_STRONG : REL_PARTIAL, [`BARS razina ${level} za '${result.skill}'`]));
+
+  matches.push(escoMatch(
+    "develop_financial_models",
+    level >= 3 ? REL_STRONG : level === 2 ? REL_PARTIAL : REL_NONE,
+    [`BARS razina ${level}: ${result.levelName}`]
+  ));
+
+  const mgmtEvidence = [];
+  if (s.nNamedRanges > 0 || s.nStructuredTables > 0) mgmtEvidence.push(`imenovani rasponi/tablice korišteni (${s.nNamedRanges} raspona, ${s.nStructuredTables} tablica)`);
+  if (s.hasReadmeSheet) mgmtEvidence.push("dokumentacijski list (README) prisutan");
+  if (s.hasInputSheet && s.hasCalcSheet && s.hasOutputSheet) mgmtEvidence.push("podaci organizirani u odvojene input/calc/output module");
+  matches.push(escoMatch("manage_data_content", mgmtEvidence.length >= 2 ? REL_STRONG : mgmtEvidence.length ? REL_PARTIAL : REL_NONE, mgmtEvidence));
+
+  const analyseEvidence = [];
+  if (f.usesAdvanced || (f.usesLookup && f.usesConditional)) analyseEvidence.push("napredna analitička logika u formulama (lookup/uvjetne/SUMIFS...)");
+  if (s.hardcodedRatio < 0.3) analyseEvidence.push(`nizak udio ručno unesenih brojeva (${fmtPct(s.hardcodedRatio)})`);
+  matches.push(escoMatch(
+    "analyse_financial_data",
+    level >= 3 ? REL_STRONG : analyseEvidence.length ? REL_PARTIAL : REL_NONE,
+    analyseEvidence.length ? analyseEvidence : [`BARS razina ${level} za '${result.skill}'`]
+  ));
+
+  return matches;
+}
+
+function escoFromSkill2(indicators, result) {
+  const level = result.level;
+  const matches = [];
+  matches.push(escoMatch(
+    "communicate_findings",
+    level >= 3 ? REL_STRONG : level === 2 ? REL_PARTIAL : REL_NONE,
+    [`BARS razina ${level}: ${result.levelName}`]
+  ));
+
+  const analyseEvidence = [];
+  if (indicators.nDistinctFinanceTerms >= 4) analyseEvidence.push(`gusta domenska terminologija (${indicators.nDistinctFinanceTerms} pojmova)`);
+  if (indicators.hasCausalLanguage && indicators.hasContrastPattern) analyseEvidence.push("razlikuje simptom od uzroka uz kvantificiranu implikaciju");
+  matches.push(escoMatch(
+    "analyse_financial_data",
+    level >= 3 ? REL_STRONG : analyseEvidence.length ? REL_PARTIAL : REL_NONE,
+    analyseEvidence.length ? analyseEvidence : [`BARS razina ${level} za '${result.skill}'`]
+  ));
+
+  return matches;
+}
+
+function mergeEsco(matches) {
+  const order = { [REL_NONE]: 0, [REL_PARTIAL]: 1, [REL_STRONG]: 2 };
+  const byKey = new Map();
+  for (const m of matches) {
+    if (!byKey.has(m.key)) { byKey.set(m.key, { ...m, evidence: [...m.evidence] }); continue; }
+    const existing = byKey.get(m.key);
+    if (order[m.relevance] > order[existing.relevance]) existing.relevance = m.relevance;
+    for (const e of m.evidence) if (!existing.evidence.includes(e)) existing.evidence.push(e);
+  }
+  return Object.keys(ESCO_LABELS).filter((k) => byKey.has(k)).map((k) => byKey.get(k));
+}
+
+function mapToEsco(skill1Data, skill2Data) {
+  let matches = [];
+  if (skill1Data) matches = matches.concat(escoFromSkill1(skill1Data.indicators, skill1Data.result));
+  if (skill2Data) matches = matches.concat(escoFromSkill2(skill2Data.indicators, skill2Data.result));
+  const present = new Set(matches.map((m) => m.key));
+  for (const key of Object.keys(ESCO_LABELS)) if (!present.has(key)) matches.push(escoMatch(key, REL_NONE, []));
+  return mergeEsco(matches);
+}
+
+/* ============================== docx_text.py, ported ============================== */
+
+async function extractDocxText(buffer) {
+  const zip = await openZip(buffer);
+  if (!zip.has("word/document.xml")) throw new Error("Datoteka nema word/document.xml — nije standardni .docx paket.");
+  const xml = await zip.readText("word/document.xml");
+  const paragraphs = [];
+  for (const paraXml of xml.split("</w:p>")) {
+    const runs = [...paraXml.matchAll(/<w:t[^>]*>([\s\S]*?)<\/w:t>/g)].map((m) => m[1]);
+    const text = runs.join("").trim();
+    if (text) paragraphs.push(text);
+  }
+  return paragraphs.join("\n\n");
+}
+
 /* ============================== rendering ============================== */
 
 const fmtPct = (x) => (x * 100).toFixed(0) + "%";
@@ -846,7 +1228,7 @@ function checkCard(title, check) {
   </div>`;
 }
 
-function ladderHTML(level) {
+function ladderHTML(level, levelNames) {
   let html = "";
   for (let lvl = 4; lvl >= 1; lvl--) {
     const reached = lvl <= level;
@@ -854,29 +1236,50 @@ function ladderHTML(level) {
     const cls = ["rung"];
     if (reached) cls.push("reached");
     if (current) cls.push("current");
-    const shortName = LEVEL_NAMES[lvl].split("—")[1].trim().split("(")[0].trim();
+    const shortName = levelNames[lvl].split("—")[1].trim().split("(")[0].trim();
     html += `<div class="${cls.join(" ")}"><span class="num mono">${lvl}</span><span class="name">${shortName}</span></div>`;
   }
   return html;
 }
 
-function renderResult(indicators, result) {
-  const panel = document.getElementById("resultsPanel");
+function indicatorCardsSkill2(t) {
+  const flag = (b) => `<span class="${b ? "flag-yes" : "flag-no"}">${b ? "da" : "ne"}</span>`;
+  const cards = [
+    ["broj riječi", t.nWords],
+    ["broj odlomaka", t.nParagraphs],
+    ["kvantificirani tokeni", t.nNumericTokens],
+    ["domenski financijski pojmovi", t.nDistinctFinanceTerms],
+    ["benchmark jezik", flag(t.hasBenchmarkLanguage)],
+    ["uzročni jezik", flag(t.hasCausalLanguage)],
+    ["simptom vs. uzrok", flag(t.hasContrastPattern)],
+    ["preporuka / akcija", flag(t.hasRecommendationLanguage)],
+    ["scenarij / neizvjesnost", flag(t.hasScenarioLanguage)],
+    ["strukturni markeri", flag(t.hasStructureMarkers)],
+    ["broj uz zaključak/preporuku", flag(t.conclusionParagraphHasNumber)],
+    ["osjetljivosni jezik", flag(t.hasSensitivityLanguage)],
+    ["broj publika (uprava/CFO/...)", t.nDistinctAudienceKeywords],
+    ["priznanje ograničenja podataka", flag(t.hasDataQualityLanguage)],
+    ["strateški/operativni kontekst", flag(t.hasStrategicContextLanguage)],
+  ];
+  return cards.map(([k, v]) => `<div class="ind-card"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+}
+
+function skillResultCardHTML(result, sourceLine, indicatorsHtml, levelNames) {
   const gapSection =
     result.level >= 4
-      ? `<div class="gap-box maxed"><h3>Dosegnuta je najviša operacionalizirana razina</h3><p>Model zadovoljava kriterije Razine 4 na sve provjerene sadržajne indikatore.</p></div>`
+      ? `<div class="gap-box maxed"><h3>Dosegnuta je najviša operacionalizirana razina</h3><p>Materijal zadovoljava kriterije Razine 4 na sve provjerene indikatore.</p></div>`
       : `<div class="gap-box"><h3>Za razinu ${result.level + 1} nedostaje</h3><ul>${result.gapToNextLevel.map((g) => `<li>${g}</li>`).join("")}</ul></div>`;
 
-  panel.innerHTML = `
+  return `
     <div class="result-head">
-      <div class="ladder">${ladderHTML(result.level)}</div>
+      <div class="ladder">${ladderHTML(result.level, levelNames)}</div>
       <div class="result-summary">
         <div class="skill-label">${result.skill}</div>
         <h2>${result.levelName}</h2>
-        <p class="level-desc">Datoteka: <span class="mono">${indicators.fileName}</span></p>
+        <p class="level-desc">${sourceLine}</p>
       </div>
     </div>
-    <div class="indicator-grid">${indicatorCards(indicators)}</div>
+    <div class="indicator-grid">${indicatorsHtml}</div>
     <div class="checks">
       ${checkCard("Provjera za razinu 2", result.checks[2])}
       ${checkCard("Provjera za razinu 3", result.checks[3])}
@@ -886,20 +1289,88 @@ function renderResult(indicators, result) {
   `;
 }
 
-function renderLoading() {
-  document.getElementById("resultsPanel").innerHTML = `<div class="loading"><span class="spinner"></span> Analiziram model…</div>`;
+function skillPillsHTML() {
+  const pill = (analyzed, label) =>
+    `<span class="skill-pill ${analyzed ? "active" : ""}"><span class="dot"></span>${label}</span>`;
+  return `<div class="skill-pills">
+    ${pill(!!state.skill1, state.skill1 ? `Vještina 1 · Razina ${state.skill1.result.level}` : "Vještina 1 · nije analizirano")}
+    ${pill(!!state.skill2, state.skill2 ? `Vještina 2 · Razina ${state.skill2.result.level}` : "Vještina 2 · nije analizirano")}
+  </div>`;
+}
+
+function escoSectionHTML() {
+  if (!state.skill1 && !state.skill2) return "";
+  const matches = mapToEsco(state.skill1, state.skill2);
+  const relClass = { [REL_STRONG]: "jaka", [REL_PARTIAL]: "djelomicna", [REL_NONE]: "nema-dokaza" };
+  const cards = matches
+    .map((m) => {
+      const evidence = m.evidence.length ? `<ul>${m.evidence.map((e) => `<li>${e}</li>`).join("")}</ul>` : "";
+      return `<div class="esco-card">
+        <span class="esco-rel ${relClass[m.relevance]}">${m.relevance}</span>
+        <div class="esco-body"><span class="label-en">${m.labelEn}</span><span class="label-hr">${m.labelHr}</span>${evidence}</div>
+      </div>`;
+    })
+    .join("");
+  return `<div class="esco-section">
+    <h3>ESCO mapiranje</h3>
+    <p class="esco-hint">Kombinira dokaze iz obje analizirane vještine (ako su obje pokrenute u ovoj sesiji) na 5 ESCO oznaka koje BARS dokument već imenuje. Oznake su navedene po imenu, ne po ESCO URI-ju — vidi napomenu u <span class="mono">esco_mapping.py</span>.</p>
+    <div class="esco-grid">${cards}</div>
+  </div>`;
+}
+
+function paintResults() {
+  const panel = document.getElementById("resultsPanel");
+  let body = skillPillsHTML();
+  if (state.lastShown === "skill1" && state.skill1) {
+    body += skillResultCardHTML(
+      state.skill1.result,
+      `Datoteka: <span class="mono">${state.skill1.indicators.fileName}</span>`,
+      indicatorCards(state.skill1.indicators),
+      LEVEL_NAMES
+    );
+  } else if (state.lastShown === "skill2" && state.skill2) {
+    body += skillResultCardHTML(
+      state.skill2.result,
+      `Izvor: <span class="mono">${state.skill2.indicators.sourceName}</span>`,
+      indicatorCardsSkill2(state.skill2.indicators),
+      SKILL2_LEVEL_NAMES
+    );
+  }
+  body += escoSectionHTML();
+  panel.innerHTML = body;
+}
+
+function renderLoading(message) {
+  document.getElementById("resultsPanel").innerHTML = `<div class="loading"><span class="spinner"></span> ${message || "Analiziram…"}</div>`;
 }
 
 function renderError(message) {
   document.getElementById("resultsPanel").innerHTML = `<div class="error-state"><strong>Analiza nije uspjela.</strong><br>${message}</div>`;
 }
 
-async function runAnalysis(buffer, fileName) {
-  renderLoading();
+const state = { skill1: null, skill2: null, lastShown: null };
+
+async function runAnalysisSkill1(buffer, fileName) {
+  renderLoading("Analiziram model…");
   try {
     const indicators = await extractIndicators(buffer, fileName);
     const result = scoreSkill1(indicators);
-    renderResult(indicators, result);
+    state.skill1 = { indicators, result };
+    state.lastShown = "skill1";
+    paintResults();
+  } catch (err) {
+    renderError(err && err.message ? err.message : String(err));
+  }
+}
+
+async function runAnalysisSkill2(text, sourceName) {
+  renderLoading("Analiziram tekst…");
+  try {
+    const indicators = extractTextIndicators(text, sourceName);
+    const result = scoreSkill2(indicators);
+    state.skill2 = { indicators, result };
+    state.lastShown = "skill2";
+    paintResults();
   } catch (err) {
     renderError(err && err.message ? err.message : String(err));
   }
@@ -922,7 +1393,7 @@ async function handleFile(file) {
   fileMeta.textContent = `${file.name} · ${humanSize(file.size)}`;
   fileMeta.classList.add("show");
   const buffer = await file.arrayBuffer();
-  await runAnalysis(buffer, file.name);
+  await runAnalysisSkill1(buffer, file.name);
 }
 
 dropzone.addEventListener("click", () => fileInput.click());
@@ -953,10 +1424,64 @@ document.getElementById("sampleButtons").addEventListener("click", (e) => {
   const lvl = btn.getAttribute("data-level");
   fileMeta.classList.remove("show");
   const buffer = base64ToArrayBuffer(window.MERIFIC_SAMPLES[lvl]);
-  runAnalysis(buffer, `primjer-razina-${lvl}.xlsx`);
+  runAnalysisSkill1(buffer, `primjer-razina-${lvl}.xlsx`);
+});
+
+/* --- tabs --- */
+const tabButtons = { excel: document.getElementById("tabBtnExcel"), text: document.getElementById("tabBtnText") };
+const tabPanels = { excel: document.getElementById("tabExcel"), text: document.getElementById("tabText") };
+function showTab(name) {
+  for (const key of Object.keys(tabPanels)) {
+    tabPanels[key].classList.toggle("hidden", key !== name);
+    tabButtons[key].classList.toggle("active", key === name);
+  }
+}
+tabButtons.excel.addEventListener("click", () => showTab("excel"));
+tabButtons.text.addEventListener("click", () => showTab("text"));
+
+/* --- text tab wiring --- */
+const textInput = document.getElementById("textInput");
+const textFileInput = document.getElementById("textFileInput");
+const textFileMeta = document.getElementById("textFileMeta");
+
+document.getElementById("analyzeTextBtn").addEventListener("click", () => {
+  const text = textInput.value.trim();
+  if (!text) return;
+  textFileMeta.classList.remove("show");
+  runAnalysisSkill2(text, "zalijepljeni tekst");
+});
+
+textFileInput.addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  textFileMeta.textContent = `${file.name} · ${humanSize(file.size)}`;
+  textFileMeta.classList.add("show");
+  try {
+    const text = file.name.toLowerCase().endsWith(".docx")
+      ? await extractDocxText(await file.arrayBuffer())
+      : await file.text();
+    textInput.value = text;
+    await runAnalysisSkill2(text, file.name);
+  } catch (err) {
+    renderError(err && err.message ? err.message : String(err));
+  }
+});
+
+document.getElementById("textSampleButtons").addEventListener("click", (e) => {
+  const btn = e.target.closest(".sample-btn");
+  if (!btn) return;
+  const lvl = btn.getAttribute("data-level");
+  textFileMeta.classList.remove("show");
+  const text = window.MERIFIC_TEXT_SAMPLES[lvl];
+  textInput.value = text;
+  runAnalysisSkill2(text, `primjer-razina-${lvl}.txt`);
 });
 </script>
 
 <script>
 window.MERIFIC_SAMPLES = {"1": "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", "2": "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", "3": "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", "4": "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"};
+</script>
+
+<script>
+window.MERIFIC_TEXT_SAMPLES = {"1": "Izvještaj o poslovanju za treći kvartal\n\nU tablici ispod prikazani su prihodi i troškovi po mjesecima.\n\nMjesec: Srpanj, Kolovoz, Rujan\nPrihod: 120.000, 125.000, 131.000\nTrošak: 90.000, 95.000, 101.000\n\nTroškovi su bili viši nego prethodne godine.\n\nPrihodi su porasli za 12% u trećem kvartalu.\n\nZa prikaz trenda prihoda kroz vrijeme korišten je tortni grafikon.\n", "2": "Izvještaj o ostvarenju plana za treći kvartal\n\nUsporedbom ostvarenja s planom po svim kategorijama, troškovi marketinga odstupaju za više od 10% u odnosu na plan.\n\nTroškovi su porasli zbog jednokratnog troška restrukturiranja u kolovozu.\n\nLinijski grafikon prikazuje trend prihoda kroz posljednjih 12 mjeseci s označenom linijom plana.\n\nPrihodi su u skladu s planom, dok su troškovi iznad plana.\n", "3": "Analiza profitabilnosti po segmentu\n\nU odnosu na prethodnu godinu, ukupna marža je porasla za 3 postotna boda, no rast je usporen u trećem kvartalu.\n\nKljučna poruka: fokusiranjem prodaje na top 20% kupaca po marži moguće je povećati EBITDA za 1,8 milijuna kuna u sljedećoj godini bez dodatnih troškova.\n\nPrvo, analiza pokazuje da 20% kupaca generira 80% ukupne marže poduzeća.\n\nDrugo, pad profitabilnosti u trećem kvartalu nije uzrokovan padom tržišta, nego gubitkom tržišnog udjela u segmentu B2B - dakle simptom je pad prodaje, a stvarni uzrok je gubitak konkurentske pozicije, a ne opći pad potražnje.\n\nTreće, scenarijska analiza za sljedeću godinu, temeljena na dvije ključne pretpostavke (rast tržišta i zadržavanje tržišnog udjela), pokazuje raspon EBITDA ishoda: base case 4,2 milijuna kuna, best case 5,6 milijuna kuna, worst case 2,9 milijuna kuna.\n\nZaključak i preporuka: predlažemo preusmjeravanje prodajnih resursa na top segment kupaca u sljedeća dva kvartala, uz praćenje slobodnog cash-flowa kao ključnog pokazatelja uspjeha.\n", "4": "Investicijska analiza - preuzimanje konkurenta X\n\nSažetak za upravu (jedna stranica): Preporučujemo odobrenje akvizicije uz preliminarnu procjenu neto sadašnje vrijednosti (NPV) od 3,4 milijuna eura, temeljenu na diskontiranom novčanom toku (DCF).\n\nOsjetljivosna analiza pokazuje da NPV mijenja predznak iz pozitivne u negativnu ako diskontna stopa prijeđe 14,5% ili ako terminalni rast padne ispod 1%, dok EBITDA marža u petoj godini ima najveći utjecaj na zaključak od sve tri ključne pretpostavke.\n\nU prilogu za CFO nalazi se detaljna metodologija izračuna WACC-a i pretpostavki po godinama, dok je operativnom timu poslana zasebna, tehnički pojednostavljena verzija fokusirana na integraciju.\n\nNapomena o ograničenjima: procjena tržišnog rasta temelji se na podacima nedovoljne pouzdanosti za segment izvan EU tržišta, stoga preporučujemo dodatnu due diligence prije konačne odluke o toj komponenti vrijednosti.\n\nAnaliza integrira financijsku procjenu sa strateškim kontekstom konsolidacije tržišta i operativnim rizicima integracije dviju organizacija.\n"};
 </script>
