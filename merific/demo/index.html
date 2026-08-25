@@ -174,9 +174,8 @@
     gap: 10px;
     margin: 18px 0 12px;
     color: var(--ink-faint);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: 12.5px;
+    font-style: italic;
   }
   .divider-label::before, .divider-label::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
 
@@ -489,9 +488,9 @@
         <polygon points="32,32 43,17 50,17 50,46 43,46 43,26 32,46" fill="#7fe3c8" />
       </svg>
       <h1>Merific</h1>
-      <span class="tag">PoC · BARS analizator</span>
+      <span class="tag">Prototip · BARS analizator</span>
     </div>
-    <p>Automatska procjena BARS razine (1–4) za dvije vještine: modeliranje financijskih tablica (Excel/Sheets) i analitička interpretacija nalaza (memo/izvještaj) — plus mapiranje na ESCO vještine.</p>
+    <p>Automatska procjena BARS razine (1–4) za dvije vještine: modeliranje financijskih tablica (Excel/Sheets) i analitička interpretacija nalaza (pismenih izvještaja) — uz mapiranje na ESCO vještine.</p>
   </header>
 
   <div class="layout">
@@ -502,12 +501,12 @@
       </div>
 
       <div class="tab-panel" id="tabExcel">
-        <h2>Analiziraj model</h2>
-        <p class="hint">Datoteka se obrađuje u pregledniku — ništa se ne šalje na server.</p>
+        <h2>Analiza modela</h2>
+        <p class="hint">🔒 Datoteka se obrađuje lokalno u pregledniku — podaci se ne šalju na poslužitelj.</p>
 
         <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Učitaj Excel datoteku">
           <div class="icon">📄</div>
-          <div class="label">Ispusti .xlsx ovdje ili klikni</div>
+          <div class="label">Prevuci .xlsx datoteku ovdje ili klikni za odabir</div>
           <div class="sub">.xlsx / .xlsm</div>
           <input type="file" id="fileInput" accept=".xlsx,.xlsm" />
         </div>
@@ -522,13 +521,14 @@
         </div>
 
         <div class="scope-note">
-          <strong>Opseg prototipa:</strong> pravilima utemeljen bodovač sadržajnih indikatora (arhitektura listova, formulna kompleksnost) za Vještinu 1 iz BARS dokumenta. Ne uključuje procesne indikatore, semantičku NLP analizu, AI-integrity provjeru ni trenirani ML model iz H1/H2 — ti dijelovi zahtijevaju infrastrukturu i ekspertski označen korpus koji ovaj prototip nema.
+          <strong>Opseg prototipa:</strong> automatsko bodovanje sadržajnih pokazatelja za Vještinu 1 (arhitektura listova, složenost formula) na temelju zadanih pravila.<br />
+          <strong>Ograničenja:</strong> prototip ne uključuje procesne pokazatelje, semantičku NLP analizu, provjeru integriteta uz pomoć umjetne inteligencije (AI) niti trenirane ML modele. Te funkcionalnosti zahtijevaju naprednu infrastrukturu i stručno označen skup podataka.
         </div>
       </div>
 
       <div class="tab-panel hidden" id="tabText">
-        <h2>Analiziraj tekst</h2>
-        <p class="hint">Zalijepi tekst memoranduma/izvještaja, ili ubaci .docx/.txt — sve u pregledniku.</p>
+        <h2>Analiza teksta</h2>
+        <p class="hint">🔒 Tekst se obrađuje lokalno u pregledniku, ili ubaci .docx/.txt — podaci se ne šalju na poslužitelj.</p>
 
         <textarea class="textarea-input" id="textInput" placeholder="Zalijepi ovdje tekst analitičkog izvještaja ili memoranduma…"></textarea>
         <button class="primary-btn" id="analyzeTextBtn">Analiziraj tekst</button>
@@ -549,7 +549,8 @@
         </div>
 
         <div class="scope-note">
-          <strong>Opseg prototipa:</strong> ključne riječi/obrasci nad tekstom (usporedba s benchmarkom, uzročni jezik, scenariji, osjetljivosna analiza…) za Vještinu 2. Nije semantičko NLP (BERT) razumijevanje teksta iz metodologije — vidi <span class="mono">merific/text_indicators.py</span> u repozitoriju.
+          <strong>Opseg prototipa:</strong> ključne riječi/obrasci nad tekstom (usporedba s benchmarkom, uzročni jezik, scenariji, osjetljivosna analiza…) za Vještinu 2.<br />
+          <strong>Ograničenja:</strong> nije semantičko NLP (BERT) razumijevanje teksta iz metodologije — vidi <span class="mono">merific/text_indicators.py</span> u repozitoriju.
         </div>
       </div>
     </div>
@@ -558,7 +559,7 @@
       <div class="empty-state" id="emptyState">
         <div class="ladder-glyph"><span></span><span></span><span></span></div>
         <h3>Nema analiziranog materijala</h3>
-        <p>Učitaj Excel model ili tekst izvještaja (ili odaberi jedan od primjera) da vidiš procijenjenu BARS razinu, dokaze i ESCO mapiranje.</p>
+        <p>Učitaj Excel model ili tekst izvještaja (ili odaberi jedan od primjera) kako bi se prikazali procijenjena BARS razina, dokazi i ESCO vještine.</p>
       </div>
     </div>
   </div>
