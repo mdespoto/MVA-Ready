@@ -36,11 +36,22 @@ class LevelCheck:
     level: int
     satisfied: list[str] = field(default_factory=list)
     missing: list[str] = field(default_factory=list)
+    # optional label -> weight (default 1.0 for any label not listed here).
+    # Skill 1's checks never populate this, so its scoring is unchanged
+    # (every item implicitly weight 1.0, same plain-ratio math as before).
+    # Skill 2 uses it so a more diagnostic signal (per the BARS text) counts
+    # for more than a merely-present one, instead of every check being an
+    # equal vote.
+    weights: dict[str, float] = field(default_factory=dict)
+
+    def _weight(self, label: str) -> float:
+        return self.weights.get(label, 1.0)
 
     @property
     def score(self) -> float:
-        total = len(self.satisfied) + len(self.missing)
-        return len(self.satisfied) / total if total else 0.0
+        satisfied_weight = sum(self._weight(label) for label in self.satisfied)
+        total_weight = satisfied_weight + sum(self._weight(label) for label in self.missing)
+        return satisfied_weight / total_weight if total_weight else 0.0
 
 
 @dataclass
@@ -196,12 +207,18 @@ def _check_skill2_level_2(t: TextIndicators) -> LevelCheck:
     odstupanja. Objašnjava uzroke poznatih odstupanja na razini direktno
     opažljivih faktora."""
     c = LevelCheck(level=2)
-    (c.satisfied if t.has_benchmark_language else c.missing).append(
-        "usporedba s benchmarkom (plan, prošla godina, prosjek)"
-    )
-    (c.satisfied if t.has_causal_language else c.missing).append("objašnjava uzrok odstupanja")
-    (c.satisfied if t.n_numeric_tokens >= 2 else c.missing).append("kvantificirani podaci (>= 2 broja/postotka)")
-    (c.satisfied if t.n_distinct_finance_terms >= 2 else c.missing).append("domenski financijski vokabular (>= 2 pojma)")
+    label_benchmark = "usporedba s benchmarkom (plan, prošla godina, prosjek)"
+    label_causal = "objašnjava uzrok odstupanja"
+    label_quant = "kvantificirani podaci (>= 2 broja/postotka)"
+    label_vocab = "domenski financijski vokabular (>= 2 pojma)"
+    (c.satisfied if t.has_benchmark_language else c.missing).append(label_benchmark)
+    (c.satisfied if t.has_causal_language else c.missing).append(label_causal)
+    (c.satisfied if t.n_numeric_tokens >= 2 else c.missing).append(label_quant)
+    (c.satisfied if t.n_distinct_finance_terms >= 2 else c.missing).append(label_vocab)
+    # causal explanation is the actual level-1-vs-2 differentiator per the BARS
+    # text (see the mandatory gate in score_skill2 below); weight it above the
+    # other three, which a level-1 text can satisfy on their own.
+    c.weights = {label_causal: 1.5, label_benchmark: 1.0, label_quant: 0.7, label_vocab: 0.7}
     return c
 
 
@@ -211,16 +228,33 @@ def _check_skill2_level_3(t: TextIndicators) -> LevelCheck:
     implikaciju za ključne financijske metrike. Prezentira scenarije...
     Zaključci su specifični i akcijski orijentirani."""
     c = LevelCheck(level=3)
-    (c.satisfied if t.has_structure_markers else c.missing).append(
-        "struktura: ključna poruka / sažetak / zaključak / preporuka"
-    )
-    (c.satisfied if t.has_recommendation_language else c.missing).append("akcijski orijentirana preporuka")
-    (c.satisfied if t.has_scenario_language else c.missing).append("scenarijska analiza / eksplicitna neizvjesnost")
-    (c.satisfied if t.conclusion_paragraph_has_number else c.missing).append(
-        "kvantificirana implikacija u istom odlomku kao zaključak/preporuka"
-    )
-    (c.satisfied if t.has_contrast_pattern else c.missing).append("eksplicitno razlikuje simptom od uzroka")
-    (c.satisfied if t.n_distinct_finance_terms >= 4 else c.missing).append("veća gustoća financijskog vokabulara (>= 4 pojma)")
+    label_structure = "struktura: ključna poruka / sažetak / zaključak / preporuka"
+    label_recommend = "akcijski orijentirana preporuka"
+    label_scenario = "scenarijska analiza / eksplicitna neizvjesnost"
+    label_concl_num = "kvantificirana implikacija u istom odlomku kao zaključak/preporuka"
+    label_contrast = "eksplicitno razlikuje simptom od uzroka"
+    label_vocab_dense = "veća gustoća financijskog vokabulara (>= 4 pojma)"
+    label_quant_impact = "eksplicitno kvantificiran financijski učinak (broj uz EBITDA/maržu/prihod...)"
+    (c.satisfied if t.has_structure_markers else c.missing).append(label_structure)
+    (c.satisfied if t.has_recommendation_language else c.missing).append(label_recommend)
+    (c.satisfied if t.has_scenario_language else c.missing).append(label_scenario)
+    (c.satisfied if t.conclusion_paragraph_has_number else c.missing).append(label_concl_num)
+    (c.satisfied if t.has_contrast_pattern else c.missing).append(label_contrast)
+    (c.satisfied if t.n_distinct_finance_terms >= 4 else c.missing).append(label_vocab_dense)
+    (c.satisfied if t.has_quantified_financial_impact else c.missing).append(label_quant_impact)
+    # distinguishing symptom from cause is literally what the BARS text names
+    # as this level's defining behaviour ("Jasno razlikuje simptom od uzroka");
+    # structure and an actionable recommendation are close behind. Vocabulary
+    # density alone is the weakest signal here (level 2 already requires some).
+    c.weights = {
+        label_contrast: 1.5,
+        label_structure: 1.2,
+        label_recommend: 1.2,
+        label_scenario: 1.0,
+        label_concl_num: 1.0,
+        label_quant_impact: 1.0,
+        label_vocab_dense: 0.6,
+    }
     return c
 
 
@@ -230,16 +264,18 @@ def _check_skill2_level_4(t: TextIndicators) -> LevelCheck:
     publikama... Sposobna je prepoznati kada podaci nisu dovoljno
     kvalitetni... i jasno komunicirati tu neizvjesnost."""
     c = LevelCheck(level=4)
-    (c.satisfied if t.has_sensitivity_language else c.missing).append(
-        "osjetljivosna analiza / prag na kojem se zaključak mijenja"
-    )
-    (c.satisfied if t.n_distinct_audience_keywords >= 2 else c.missing).append(
-        "komunikacija prilagođena >= 2 različite publike (uprava/CFO/investitori/operativni tim)"
-    )
-    (c.satisfied if t.has_data_quality_language else c.missing).append("eksplicitno priznaje ograničenja kvalitete podataka")
-    (c.satisfied if t.has_strategic_context_language else c.missing).append(
-        "integrira strateški/operativni/tržišni kontekst uz financijsku analizu"
-    )
+    label_sensitivity = "osjetljivosna analiza / prag na kojem se zaključak mijenja"
+    label_audience = "komunikacija prilagođena >= 2 različite publike (uprava/CFO/investitori/operativni tim)"
+    label_data_quality = "eksplicitno priznaje ograničenja kvalitete podataka"
+    label_context = "integrira strateški/operativni/tržišni kontekst uz financijsku analizu"
+    (c.satisfied if t.has_sensitivity_language else c.missing).append(label_sensitivity)
+    (c.satisfied if t.n_distinct_audience_keywords >= 2 else c.missing).append(label_audience)
+    (c.satisfied if t.has_data_quality_language else c.missing).append(label_data_quality)
+    (c.satisfied if t.has_strategic_context_language else c.missing).append(label_context)
+    # sensitivity analysis and naming data-quality limitations are the two
+    # behaviours the BARS text calls out explicitly for level 4; audience
+    # adaptation and context integration are supporting signals.
+    c.weights = {label_sensitivity: 1.3, label_data_quality: 1.2, label_audience: 1.0, label_context: 1.0}
     return c
 
 

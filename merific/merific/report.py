@@ -125,6 +125,7 @@ def text_to_text(indicators: TextIndicators, result: BARSResult) -> str:
     lines.append(f"  - broj riječi: {t.n_words}, broj odlomaka: {t.n_paragraphs}")
     lines.append(f"  - benchmark jezik: {t.has_benchmark_language}, uzročni jezik: {t.has_causal_language}")
     lines.append(f"  - kvantificirani tokeni: {t.n_numeric_tokens}, domenski pojmovi: {t.n_distinct_finance_terms}")
+    lines.append(f"  - kvantificiran financijski učinak (broj uz EBITDA/maržu/...): {t.has_quantified_financial_impact}")
     lines.append(f"  - preporuka/akcija: {t.has_recommendation_language}, scenarij/neizvjesnost: {t.has_scenario_language}")
     lines.append(f"  - strukturni markeri: {t.has_structure_markers}, broj uz zaključak: {t.conclusion_paragraph_has_number}")
     lines.append(f"  - simptom vs. uzrok: {t.has_contrast_pattern}")

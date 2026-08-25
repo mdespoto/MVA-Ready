@@ -8,6 +8,15 @@ this layer (§4.2/§5.1's "NLP i ML za automatiziranu procjenu"). It is the
 same kind of transparent, rule-based proxy `indicators.py` builds for
 spreadsheets, applied to text: every signal is a named keyword/pattern
 match, so a reviewer can see exactly what triggered a score.
+
+This module was widened once (still keyword/regex, no embeddings): larger
+per-category vocabularies for recall, plus a handful of higher-confidence
+regex PHRASE patterns (`*_PHRASE_RE` below) that catch a stronger form of a
+signal than a single keyword can — e.g. "glavni uzrok" or "preporučujemo
+da..." rather than just "uzrok"/"preporuč". Each phrase pattern widens the
+matching boolean field it feeds (a keyword hit OR a phrase-pattern hit both
+count), it does not add new checks. The corresponding weighting of *how
+diagnostic* each signal is lives in `bars_scoring.py`, not here.
 """
 
 from __future__ import annotations
@@ -17,11 +26,23 @@ from dataclasses import dataclass
 
 BENCHMARK_KEYWORDS = [
     "plan", "budžet", "prosjek", "prethodn", "prošl", "cilj", "target",
-    "benchmark", "u odnosu na", "industrij",
+    "benchmark", "u odnosu na", "industrij", "referentn", "usporedb",
+    "u usporedbi s", "nasuprot", "godinu ranije", "prošlogodišnj",
+    "planiran", "tržišni prosjek", "konkurentsk",
 ]
 CAUSAL_KEYWORDS = [
-    "zbog", "uzrok", "razlog", "posljedic", "rezultat toga", "utjecaj",
-    "proizlazi", "uslijed", "dovodi do", "vodi do",
+    # "uzro"/"razlo" (not "uzrok"/"razlog"): Croatian's k/g -> c/z alternation
+    # before a case ending starting in i/e means the bare word only matches
+    # nominative singular -- "uzroci", "razlozima" etc. need the shorter stem.
+    "zbog", "uzro", "razlo", "posljedic", "rezultat toga", "utjecaj",
+    "proizlazi", "uslijed", "dovodi do", "vodi do", "kao rezultat",
+    "iz razloga", "objašnjava se", "generira", "izaziva", "potaknuto",
+]
+CAUSAL_PHRASE_PATTERNS = [
+    re.compile(r"glavni\s+uzrok", re.IGNORECASE),
+    re.compile(r"temeljni\s+uzrok", re.IGNORECASE),
+    re.compile(r"korijenski\s+uzrok", re.IGNORECASE),
+    re.compile(r"(?:je|su)\s+(?:posljedica|rezultat)\s+\w+", re.IGNORECASE),
 ]
 CONTRAST_PATTERNS = [
     re.compile(r"nije\s+\w+(\s+\w+){0,4}\s+nego", re.IGNORECASE),
@@ -32,31 +53,60 @@ CONTRAST_PATTERNS = [
 ]
 RECOMMENDATION_KEYWORDS = [
     "preporuč", "predlaž", "potrebno je", "sljedeći korak", "akcijski plan",
+    "savjetujemo", "trebalo bi", "nužno je", "akcijski korac",
+    "plan djelovanja", "prijedlo", "preporučeno je",  # "prijedlo": see CAUSAL_KEYWORDS note (prijedlog -> prijedlozi)
+]
+RECOMMENDATION_PHRASE_PATTERNS = [
+    re.compile(r"preporuč(?:amo|ujemo)\s+da\b", re.IGNORECASE),
+    re.compile(r"predlažemo\s+da\b", re.IGNORECASE),
 ]
 SCENARIO_KEYWORDS = [
     "scenarij", "best case", "worst case", "base case", "neizvjesnost",
-    "raspon ishoda", "rizik",
+    "raspon ishoda", "rizi", "optimističn", "pesimističn", "konzervativn",
+    "raspon procjena", "interval pouzdanosti", "vjerojatnost", "što ako",
 ]
-STRUCTURE_KEYWORDS = ["zaključak", "sažetak", "preporuka", "nalaz", "ključna poruka"]
+STRUCTURE_KEYWORDS = [
+    "zaključak", "sažetak", "preporuka", "nalaz", "ključna poruka",
+    "sinteza", "pregled nalaza", "izvršni sažetak", "glavna poruka",
+]
 SENSITIVITY_KEYWORDS = [
     "osjetljivost", "osjetljivosna", "diskontna stopa", "terminalni rast",
     "mijenja predznak", "prag osjetljivosti", "tipping point", "threshold",
+    "elastičnost", "granična vrijednost", "prijelomna točka", "break-even",
+    "točka pokrića", "kritična pretpostavka",
+]
+SENSITIVITY_PHRASE_PATTERNS = [
+    re.compile(r"najveći\s+utjecaj\s+na", re.IGNORECASE),
 ]
 AUDIENCE_KEYWORDS = [
-    "uprav", "cfo", "investitor", "operativni tim", "operativnom timu", "nefinancijsk",
+    "uprav", "cfo", "investitor", "operativni tim", "operativnom timu",
+    "nefinancijsk", "dioničar", "upravni odbor", "nadzorni odbor",
+    "menadžment", "vanjski partner", "regulator",
 ]
 DATA_QUALITY_KEYWORDS = [
     "ograničenj", "nedovoljno pouzdan", "nedovoljne pouzdanosti",
     "nije moguće sa sigurnošću", "nisku pouzdanost", "nedostatn",
+    "podaci nisu potpuni", "manjkavi podaci", "aproksimacija",
+    "procjena s rezervom", "dodatna provjera", "nesigurnost u podacima",
 ]
-STRATEGIC_CONTEXT_KEYWORDS = ["strateš", "operativn", "konkurent", "tržišt"]
+STRATEGIC_CONTEXT_KEYWORDS = [
+    "strateš", "operativn", "konkurent", "tržišt", "industrijsk",
+    "regulatorn", "makroekonomsk", "geopolitičk",
+]
 FINANCE_VOCAB = [
-    "ebitda", "cash-flow", "cash flow", "novčani tok", "marža", "marže",
-    "prihod", "trošak", "dobit", "roe", "povrat na kapital", "tržišni udio",
-    "npv", "dcf", "wacc",
+    "ebitda", "cash-flow", "cash flow", "novčani tok", "marž",  # "marž" covers marža/marže/marži/maržu/maržom
+    "prihod", "trošak", "trošk",  # "trošak" (nom.sg, fleeting vowel) + "trošk" (troška/trošku/troškovi/...)
+    "dobit", "roe", "povrat na kapital", "tržišni udio",
+    "npv", "dcf", "wacc", "bilanca", "račun dobiti i gubitka",
+    "operativna marž", "neto marž", "likvidnost", "zaduženost",
+    "kapitalni izdaci", "capex", "opex", "amortizacija", "obrtni kapital",
+    "interna stopa povrata", "irr", "rentabilnost", "solventnost",
 ]
 
 NUMERIC_TOKEN_RE = re.compile(r"\d+(?:[.,]\d+)?\s?%?")
+QUANTIFIED_IMPACT_PHRASE_RE = re.compile(
+    r"\d+(?:[.,]\d+)?\s?%?\s+(?:ebitda|marž\w*|prihod\w*|dobit\w*|npv|troš\w*)", re.IGNORECASE
+)
 BAD_CHART_RE = re.compile(r"tortni grafikon", re.IGNORECASE)
 TREND_WORDS_RE = re.compile(r"trend|kroz vrijeme|tijekom", re.IGNORECASE)
 
@@ -66,8 +116,10 @@ def _count_distinct_hits(text: str, keywords: list[str]) -> int:
     return sum(1 for kw in keywords if kw.lower() in lt)
 
 
-def _any_hit(text: str, keywords: list[str]) -> bool:
-    return _count_distinct_hits(text, keywords) > 0
+def _any_hit(text: str, keywords: list[str], phrase_patterns: list[re.Pattern] | None = None) -> bool:
+    if _count_distinct_hits(text, keywords) > 0:
+        return True
+    return bool(phrase_patterns) and any(p.search(text) for p in phrase_patterns)
 
 
 @dataclass
@@ -79,6 +131,7 @@ class TextIndicators:
     has_causal_language: bool
     has_contrast_pattern: bool
     n_numeric_tokens: int
+    has_quantified_financial_impact: bool
     has_recommendation_language: bool
     has_scenario_language: bool
     has_structure_markers: bool
@@ -108,14 +161,15 @@ def extract_text_indicators(text: str, source_name: str = "<text>") -> TextIndic
         n_words=len(text.split()),
         n_paragraphs=len(paragraphs),
         has_benchmark_language=_any_hit(text, BENCHMARK_KEYWORDS),
-        has_causal_language=_any_hit(text, CAUSAL_KEYWORDS),
+        has_causal_language=_any_hit(text, CAUSAL_KEYWORDS, CAUSAL_PHRASE_PATTERNS),
         has_contrast_pattern=any(p.search(text) for p in CONTRAST_PATTERNS),
         n_numeric_tokens=len(NUMERIC_TOKEN_RE.findall(text)),
-        has_recommendation_language=_any_hit(text, RECOMMENDATION_KEYWORDS),
+        has_quantified_financial_impact=bool(QUANTIFIED_IMPACT_PHRASE_RE.search(text)),
+        has_recommendation_language=_any_hit(text, RECOMMENDATION_KEYWORDS, RECOMMENDATION_PHRASE_PATTERNS),
         has_scenario_language=_any_hit(text, SCENARIO_KEYWORDS),
         has_structure_markers=_any_hit(text, STRUCTURE_KEYWORDS),
         conclusion_paragraph_has_number=conclusion_paragraph_has_number,
-        has_sensitivity_language=_any_hit(text, SENSITIVITY_KEYWORDS),
+        has_sensitivity_language=_any_hit(text, SENSITIVITY_KEYWORDS, SENSITIVITY_PHRASE_PATTERNS),
         n_distinct_audience_keywords=_count_distinct_hits(text, AUDIENCE_KEYWORDS),
         has_data_quality_language=_any_hit(text, DATA_QUALITY_KEYWORDS),
         has_strategic_context_language=_any_hit(text, STRATEGIC_CONTEXT_KEYWORDS),

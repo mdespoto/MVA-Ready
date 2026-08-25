@@ -103,13 +103,28 @@ one-off).
 **Vještina 2 — text:** benchmark/comparison language, causal-explanation
 language, a symptom-vs-cause contrast pattern, numeric-quantification count
 (and whether a number appears in the same paragraph as a conclusion/
-recommendation), recommendation/action language, scenario/uncertainty
-language, structural markers ("ključna poruka", "zaključak", "preporuka"),
+recommendation, or immediately next to a named financial metric), recommendation/action language,
+scenario/uncertainty language, structural markers ("ključna poruka", "zaključak", "preporuka"),
 sensitivity/threshold language, count of distinct audience keywords (uprava/
 CFO/investitori/operativni tim), data-quality/limitation acknowledgment,
 strategic/operational context integration, and financial-vocabulary density.
 A pie-chart-for-a-trend mention is flagged as a note (the BARS document's
 own Level-1 example) but does not affect scoring on its own.
+
+Each of those is a keyword list *and* a handful of higher-confidence regex
+phrase patterns (`*_PHRASE_RE` / `*_PATTERNS` in `text_indicators.py`) — e.g.
+"glavni uzrok" or "preporučujemo da..." carry more signal than a bare
+"uzrok"/"preporuč" hit, so they widen the same boolean field rather than
+adding new checks. `bars_scoring.py`'s `LevelCheck` scores Vještina 2 by
+*weighted* ratio, not a plain count: a check's `weights` dict (default 1.0
+for anything unlisted) lets a more diagnostic signal — e.g. "distinguishes
+symptom from cause" at Level 3 — outvote a merely-present one. Skill 1 never
+sets `weights`, so its scoring is unchanged (every item implicitly 1.0).
+None of this is semantic — it's still string/regex matching, just a richer
+layer of it. See the module docstrings for what's still explicitly out of
+scope and why (real embeddings need a model or an API call this environment
+can't reach offline — `ec.europa.eu`, `esco.ec.europa.eu`, and
+`huggingface.co` are all blocked by this environment's network egress).
 
 ## ESCO mapping
 

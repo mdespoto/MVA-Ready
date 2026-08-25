@@ -925,8 +925,13 @@ const LEVEL_NAMES = {
   4: "Razina 4 — Napredna razina (samostalno modeliranje)",
 };
 
-function mkCheck(level) { return { level, satisfied: [], missing: [] }; }
-function checkScore(c) { const t = c.satisfied.length + c.missing.length; return t ? c.satisfied.length / t : 0; }
+function mkCheck(level) { return { level, satisfied: [], missing: [], weights: {} }; }
+function checkWeight(c, label) { return Object.prototype.hasOwnProperty.call(c.weights, label) ? c.weights[label] : 1.0; }
+function checkScore(c) {
+  const satisfiedWeight = c.satisfied.reduce((sum, label) => sum + checkWeight(c, label), 0);
+  const totalWeight = satisfiedWeight + c.missing.reduce((sum, label) => sum + checkWeight(c, label), 0);
+  return totalWeight ? satisfiedWeight / totalWeight : 0;
+}
 
 function checkLevel2(m) {
   const c = mkCheck(2);
@@ -983,8 +988,24 @@ function scoreSkill1(m) {
 
 /* ============================== text_indicators.py, ported ============================== */
 
-const BENCHMARK_KEYWORDS = ["plan", "budžet", "prosjek", "prethodn", "prošl", "cilj", "target", "benchmark", "u odnosu na", "industrij"];
-const CAUSAL_KEYWORDS = ["zbog", "uzrok", "razlog", "posljedic", "rezultat toga", "utjecaj", "proizlazi", "uslijed", "dovodi do", "vodi do"];
+const BENCHMARK_KEYWORDS = [
+  "plan", "budžet", "prosjek", "prethodn", "prošl", "cilj", "target", "benchmark", "u odnosu na", "industrij",
+  "referentn", "usporedb", "u usporedbi s", "nasuprot", "godinu ranije", "prošlogodišnj", "planiran",
+  "tržišni prosjek", "konkurentsk",
+];
+// "uzro"/"razlo" not "uzrok"/"razlog": Croatian's k/g -> c/z alternation before
+// a case ending starting in i/e means the bare word only matches nominative
+// singular -- "uzroci", "razlozima" etc. need the shorter stem.
+const CAUSAL_KEYWORDS = [
+  "zbog", "uzro", "razlo", "posljedic", "rezultat toga", "utjecaj", "proizlazi", "uslijed", "dovodi do", "vodi do",
+  "kao rezultat", "iz razloga", "objašnjava se", "generira", "izaziva", "potaknuto",
+];
+const CAUSAL_PHRASE_PATTERNS = [
+  /glavni\s+uzrok/i,
+  /temeljni\s+uzrok/i,
+  /korijenski\s+uzrok/i,
+  /(?:je|su)\s+(?:posljedica|rezultat)\s+\w+/i,
+];
 const CONTRAST_PATTERNS = [
   /nije\s+\w+(\s+\w+){0,4}\s+nego/i,
   /ne\s+zbog[\s\S]{0,80}nego/i,
@@ -992,16 +1013,43 @@ const CONTRAST_PATTERNS = [
   /simptom[\s\S]{0,120}uzrok/i,
   /za razliku od/i,
 ];
-const RECOMMENDATION_KEYWORDS = ["preporuč", "predlaž", "potrebno je", "sljedeći korak", "akcijski plan"];
-const SCENARIO_KEYWORDS = ["scenarij", "best case", "worst case", "base case", "neizvjesnost", "raspon ishoda", "rizik"];
-const STRUCTURE_KEYWORDS = ["zaključak", "sažetak", "preporuka", "nalaz", "ključna poruka"];
-const SENSITIVITY_KEYWORDS = ["osjetljivost", "osjetljivosna", "diskontna stopa", "terminalni rast", "mijenja predznak", "prag osjetljivosti", "tipping point", "threshold"];
-const AUDIENCE_KEYWORDS = ["uprav", "cfo", "investitor", "operativni tim", "operativnom timu", "nefinancijsk"];
-const DATA_QUALITY_KEYWORDS = ["ograničenj", "nedovoljno pouzdan", "nedovoljne pouzdanosti", "nije moguće sa sigurnošću", "nisku pouzdanost", "nedostatn"];
-const STRATEGIC_CONTEXT_KEYWORDS = ["strateš", "operativn", "konkurent", "tržišt"];
-const FINANCE_VOCAB = ["ebitda", "cash-flow", "cash flow", "novčani tok", "marža", "marže", "prihod", "trošak", "dobit", "roe", "povrat na kapital", "tržišni udio", "npv", "dcf", "wacc"];
+const RECOMMENDATION_KEYWORDS = [
+  "preporuč", "predlaž", "potrebno je", "sljedeći korak", "akcijski plan",
+  "savjetujemo", "trebalo bi", "nužno je", "akcijski korac", "plan djelovanja", "prijedlo", "preporučeno je",
+];
+const RECOMMENDATION_PHRASE_PATTERNS = [/preporuč(?:amo|ujemo)\s+da\b/i, /predlažemo\s+da\b/i];
+const SCENARIO_KEYWORDS = [
+  "scenarij", "best case", "worst case", "base case", "neizvjesnost", "raspon ishoda", "rizi",
+  "optimističn", "pesimističn", "konzervativn", "raspon procjena", "interval pouzdanosti", "vjerojatnost", "što ako",
+];
+const STRUCTURE_KEYWORDS = [
+  "zaključak", "sažetak", "preporuka", "nalaz", "ključna poruka", "sinteza", "pregled nalaza", "izvršni sažetak", "glavna poruka",
+];
+const SENSITIVITY_KEYWORDS = [
+  "osjetljivost", "osjetljivosna", "diskontna stopa", "terminalni rast", "mijenja predznak", "prag osjetljivosti",
+  "tipping point", "threshold", "elastičnost", "granična vrijednost", "prijelomna točka", "break-even",
+  "točka pokrića", "kritična pretpostavka",
+];
+const SENSITIVITY_PHRASE_PATTERNS = [/najveći\s+utjecaj\s+na/i];
+const AUDIENCE_KEYWORDS = [
+  "uprav", "cfo", "investitor", "operativni tim", "operativnom timu", "nefinancijsk",
+  "dioničar", "upravni odbor", "nadzorni odbor", "menadžment", "vanjski partner", "regulator",
+];
+const DATA_QUALITY_KEYWORDS = [
+  "ograničenj", "nedovoljno pouzdan", "nedovoljne pouzdanosti", "nije moguće sa sigurnošću", "nisku pouzdanost", "nedostatn",
+  "podaci nisu potpuni", "manjkavi podaci", "aproksimacija", "procjena s rezervom", "dodatna provjera", "nesigurnost u podacima",
+];
+const STRATEGIC_CONTEXT_KEYWORDS = ["strateš", "operativn", "konkurent", "tržišt", "industrijsk", "regulatorn", "makroekonomsk", "geopolitičk"];
+const FINANCE_VOCAB = [
+  "ebitda", "cash-flow", "cash flow", "novčani tok", "marž", // "marž" covers marža/marže/marži/maržu/maržom
+  "prihod", "trošak", "trošk", // "trošak" (nom.sg, fleeting vowel) + "trošk" (troška/trošku/troškovi/...)
+  "dobit", "roe", "povrat na kapital", "tržišni udio", "npv", "dcf", "wacc", "bilanca", "račun dobiti i gubitka",
+  "operativna marž", "neto marž", "likvidnost", "zaduženost", "kapitalni izdaci", "capex", "opex", "amortizacija",
+  "obrtni kapital", "interna stopa povrata", "irr", "rentabilnost", "solventnost",
+];
 
 const NUMERIC_TOKEN_RE = /\d+(?:[.,]\d+)?\s?%?/g;
+const QUANTIFIED_IMPACT_PHRASE_RE = /\d+(?:[.,]\d+)?\s?%?\s+(?:ebitda|marž\w*|prihod\w*|dobit\w*|npv|troš\w*)/i;
 const BAD_CHART_RE = /tortni grafikon/i;
 const TREND_WORDS_RE = /trend|kroz vrijeme|tijekom/i;
 
@@ -1009,7 +1057,10 @@ function countDistinctHits(text, keywords) {
   const lt = text.toLowerCase();
   return keywords.reduce((n, kw) => n + (lt.includes(kw.toLowerCase()) ? 1 : 0), 0);
 }
-function anyHit(text, keywords) { return countDistinctHits(text, keywords) > 0; }
+function anyHit(text, keywords, phrasePatterns) {
+  if (countDistinctHits(text, keywords) > 0) return true;
+  return !!phrasePatterns && phrasePatterns.some((re) => re.test(text));
+}
 
 function extractTextIndicators(text, sourceName) {
   let paragraphs = text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
@@ -1025,14 +1076,15 @@ function extractTextIndicators(text, sourceName) {
     nWords: text.split(/\s+/).filter(Boolean).length,
     nParagraphs: paragraphs.length,
     hasBenchmarkLanguage: anyHit(text, BENCHMARK_KEYWORDS),
-    hasCausalLanguage: anyHit(text, CAUSAL_KEYWORDS),
+    hasCausalLanguage: anyHit(text, CAUSAL_KEYWORDS, CAUSAL_PHRASE_PATTERNS),
     hasContrastPattern: CONTRAST_PATTERNS.some((re) => re.test(text)),
     nNumericTokens: (text.match(NUMERIC_TOKEN_RE) || []).length,
-    hasRecommendationLanguage: anyHit(text, RECOMMENDATION_KEYWORDS),
+    hasQuantifiedFinancialImpact: QUANTIFIED_IMPACT_PHRASE_RE.test(text),
+    hasRecommendationLanguage: anyHit(text, RECOMMENDATION_KEYWORDS, RECOMMENDATION_PHRASE_PATTERNS),
     hasScenarioLanguage: anyHit(text, SCENARIO_KEYWORDS),
     hasStructureMarkers: anyHit(text, STRUCTURE_KEYWORDS),
     conclusionParagraphHasNumber,
-    hasSensitivityLanguage: anyHit(text, SENSITIVITY_KEYWORDS),
+    hasSensitivityLanguage: anyHit(text, SENSITIVITY_KEYWORDS, SENSITIVITY_PHRASE_PATTERNS),
     nDistinctAudienceKeywords: countDistinctHits(text, AUDIENCE_KEYWORDS),
     hasDataQualityLanguage: anyHit(text, DATA_QUALITY_KEYWORDS),
     hasStrategicContextLanguage: anyHit(text, STRATEGIC_CONTEXT_KEYWORDS),
@@ -1052,30 +1104,60 @@ const SKILL2_LEVEL_NAMES = {
 
 function checkSkill2Level2(t) {
   const c = mkCheck(2);
-  (t.hasBenchmarkLanguage ? c.satisfied : c.missing).push("usporedba s benchmarkom (plan, prošla godina, prosjek)");
-  (t.hasCausalLanguage ? c.satisfied : c.missing).push("objašnjava uzrok odstupanja");
-  (t.nNumericTokens >= 2 ? c.satisfied : c.missing).push("kvantificirani podaci (>= 2 broja/postotka)");
-  (t.nDistinctFinanceTerms >= 2 ? c.satisfied : c.missing).push("domenski financijski vokabular (>= 2 pojma)");
+  const lBenchmark = "usporedba s benchmarkom (plan, prošla godina, prosjek)";
+  const lCausal = "objašnjava uzrok odstupanja";
+  const lQuant = "kvantificirani podaci (>= 2 broja/postotka)";
+  const lVocab = "domenski financijski vokabular (>= 2 pojma)";
+  (t.hasBenchmarkLanguage ? c.satisfied : c.missing).push(lBenchmark);
+  (t.hasCausalLanguage ? c.satisfied : c.missing).push(lCausal);
+  (t.nNumericTokens >= 2 ? c.satisfied : c.missing).push(lQuant);
+  (t.nDistinctFinanceTerms >= 2 ? c.satisfied : c.missing).push(lVocab);
+  // causal explanation is the actual level-1-vs-2 differentiator per the BARS
+  // text (see the mandatory gate in scoreSkill2 below); weight it above the
+  // other three, which a level-1 text can satisfy on their own.
+  c.weights = { [lCausal]: 1.5, [lBenchmark]: 1.0, [lQuant]: 0.7, [lVocab]: 0.7 };
   return c;
 }
 
 function checkSkill2Level3(t) {
   const c = mkCheck(3);
-  (t.hasStructureMarkers ? c.satisfied : c.missing).push("struktura: ključna poruka / sažetak / zaključak / preporuka");
-  (t.hasRecommendationLanguage ? c.satisfied : c.missing).push("akcijski orijentirana preporuka");
-  (t.hasScenarioLanguage ? c.satisfied : c.missing).push("scenarijska analiza / eksplicitna neizvjesnost");
-  (t.conclusionParagraphHasNumber ? c.satisfied : c.missing).push("kvantificirana implikacija u istom odlomku kao zaključak/preporuka");
-  (t.hasContrastPattern ? c.satisfied : c.missing).push("eksplicitno razlikuje simptom od uzroka");
-  (t.nDistinctFinanceTerms >= 4 ? c.satisfied : c.missing).push("veća gustoća financijskog vokabulara (>= 4 pojma)");
+  const lStructure = "struktura: ključna poruka / sažetak / zaključak / preporuka";
+  const lRecommend = "akcijski orijentirana preporuka";
+  const lScenario = "scenarijska analiza / eksplicitna neizvjesnost";
+  const lConclNum = "kvantificirana implikacija u istom odlomku kao zaključak/preporuka";
+  const lContrast = "eksplicitno razlikuje simptom od uzroka";
+  const lVocabDense = "veća gustoća financijskog vokabulara (>= 4 pojma)";
+  const lQuantImpact = "eksplicitno kvantificiran financijski učinak (broj uz EBITDA/maržu/prihod...)";
+  (t.hasStructureMarkers ? c.satisfied : c.missing).push(lStructure);
+  (t.hasRecommendationLanguage ? c.satisfied : c.missing).push(lRecommend);
+  (t.hasScenarioLanguage ? c.satisfied : c.missing).push(lScenario);
+  (t.conclusionParagraphHasNumber ? c.satisfied : c.missing).push(lConclNum);
+  (t.hasContrastPattern ? c.satisfied : c.missing).push(lContrast);
+  (t.nDistinctFinanceTerms >= 4 ? c.satisfied : c.missing).push(lVocabDense);
+  (t.hasQuantifiedFinancialImpact ? c.satisfied : c.missing).push(lQuantImpact);
+  // distinguishing symptom from cause is literally what the BARS text names as
+  // this level's defining behaviour; structure and an actionable recommendation
+  // are close behind. Vocabulary density alone is the weakest signal here.
+  c.weights = {
+    [lContrast]: 1.5, [lStructure]: 1.2, [lRecommend]: 1.2,
+    [lScenario]: 1.0, [lConclNum]: 1.0, [lQuantImpact]: 1.0, [lVocabDense]: 0.6,
+  };
   return c;
 }
 
 function checkSkill2Level4(t) {
   const c = mkCheck(4);
-  (t.hasSensitivityLanguage ? c.satisfied : c.missing).push("osjetljivosna analiza / prag na kojem se zaključak mijenja");
-  (t.nDistinctAudienceKeywords >= 2 ? c.satisfied : c.missing).push("komunikacija prilagođena >= 2 različite publike (uprava/CFO/investitori/operativni tim)");
-  (t.hasDataQualityLanguage ? c.satisfied : c.missing).push("eksplicitno priznaje ograničenja kvalitete podataka");
-  (t.hasStrategicContextLanguage ? c.satisfied : c.missing).push("integrira strateški/operativni/tržišni kontekst uz financijsku analizu");
+  const lSensitivity = "osjetljivosna analiza / prag na kojem se zaključak mijenja";
+  const lAudience = "komunikacija prilagođena >= 2 različite publike (uprava/CFO/investitori/operativni tim)";
+  const lDataQuality = "eksplicitno priznaje ograničenja kvalitete podataka";
+  const lContext = "integrira strateški/operativni/tržišni kontekst uz financijsku analizu";
+  (t.hasSensitivityLanguage ? c.satisfied : c.missing).push(lSensitivity);
+  (t.nDistinctAudienceKeywords >= 2 ? c.satisfied : c.missing).push(lAudience);
+  (t.hasDataQualityLanguage ? c.satisfied : c.missing).push(lDataQuality);
+  (t.hasStrategicContextLanguage ? c.satisfied : c.missing).push(lContext);
+  // sensitivity analysis and naming data-quality limitations are the two
+  // behaviours the BARS text calls out explicitly for level 4.
+  c.weights = { [lSensitivity]: 1.3, [lDataQuality]: 1.2, [lAudience]: 1.0, [lContext]: 1.0 };
   return c;
 }
 
@@ -1712,6 +1794,7 @@ function indicatorCardsSkill2(t) {
     ["broj riječi", t.nWords],
     ["broj odlomaka", t.nParagraphs],
     ["kvantificirani tokeni", t.nNumericTokens],
+    ["kvantificiran financijski učinak", flag(t.hasQuantifiedFinancialImpact)],
     ["domenski financijski pojmovi", t.nDistinctFinanceTerms],
     ["benchmark jezik", flag(t.hasBenchmarkLanguage)],
     ["uzročni jezik", flag(t.hasCausalLanguage)],
