@@ -1,0 +1,2154 @@
+<title>Merific</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  :root {
+    --paper: #f6f6fb;
+    --paper-raised: #ffffff;
+    --ink: #14151f;
+    --ink-soft: #4b4d63;
+    --ink-faint: #767893;
+    --rule: #e1e2ed;
+    --rule-strong: #c7c9dc;
+    --blue: #2f5fe0;
+    --blue-soft: #e8edfc;
+    --green: #1f7a4c;
+    --green-soft: #e1f0e6;
+    --amber: #a6650c;
+    --amber-soft: #f5e9d6;
+    --glow-1: rgba(47, 95, 224, 0.10);
+    --glow-2: rgba(230, 58, 140, 0.08);
+    --shadow: 0 1px 2px rgba(20, 21, 31, 0.06), 0 8px 24px -12px rgba(20, 21, 31, 0.16);
+    --radius: 10px;
+    --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+    --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0b0c12;
+      --paper-raised: #15161f;
+      --ink: #ececf5;
+      --ink-soft: #a6a8bf;
+      --ink-faint: #75778f;
+      --rule: #262838;
+      --rule-strong: #383b52;
+      --blue: #7c93f5;
+      --blue-soft: #1c2340;
+      --green: #6ccf95;
+      --green-soft: #163524;
+      --amber: #e0a24a;
+      --amber-soft: #3a2a11;
+      --glow-1: rgba(124, 147, 245, 0.14);
+      --glow-2: rgba(230, 58, 140, 0.11);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0b0c12;
+    --paper-raised: #15161f;
+    --ink: #ececf5;
+    --ink-soft: #a6a8bf;
+    --ink-faint: #75778f;
+    --rule: #262838;
+    --rule-strong: #383b52;
+    --blue: #7c93f5;
+    --blue-soft: #1c2340;
+    --green: #6ccf95;
+    --green-soft: #163524;
+    --amber: #e0a24a;
+    --amber-soft: #3a2a11;
+    --glow-1: rgba(124, 147, 245, 0.14);
+    --glow-2: rgba(230, 58, 140, 0.11);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    background-image:
+      radial-gradient(1200px 520px at 12% -12%, var(--glow-1), transparent 60%),
+      radial-gradient(1000px 520px at 100% -6%, var(--glow-2), transparent 60%);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  a { color: var(--blue); }
+  h1, h2, h3 { font-family: var(--font-display); font-weight: 600; text-wrap: balance; margin: 0; }
+  .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  .shell { max-width: 1180px; margin: 0 auto; padding: 28px 24px 64px; }
+
+  header.top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 22px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid var(--rule-strong);
+    flex-wrap: wrap;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .mark { flex-shrink: 0; }
+  .brand h1 { margin-left: 2px; }
+  .brand h1 { font-size: 30px; letter-spacing: 0.01em; }
+  .brand .tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    border: 1px solid var(--rule-strong);
+    border-radius: 999px;
+    padding: 3px 9px;
+  }
+  header.top p {
+    margin: 0;
+    max-width: 46ch;
+    color: var(--ink-soft);
+    font-size: 14.5px;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(260px, 320px) 1fr;
+    gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--paper-raised);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  /* --- left: input panel --- */
+  .input-panel { padding: 20px; position: sticky; top: 20px; }
+  .input-panel h2 { font-size: 17px; margin-bottom: 4px; }
+  .input-panel .hint { color: var(--ink-soft); font-size: 13px; margin: 0 0 16px; }
+
+  .dropzone {
+    border: 1.5px dashed var(--rule-strong);
+    border-radius: var(--radius);
+    padding: 22px 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+    background: transparent;
+  }
+  .dropzone:hover, .dropzone.drag { border-color: var(--blue); background: var(--blue-soft); }
+  .dropzone:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+  .dropzone .icon { font-size: 22px; margin-bottom: 6px; }
+  .dropzone .label { font-size: 13.5px; font-weight: 500; }
+  .dropzone .sub { font-size: 12px; color: var(--ink-faint); margin-top: 2px; }
+  input[type="file"] { display: none; }
+
+  .filemeta {
+    margin-top: 12px;
+    font-size: 12.5px;
+    font-family: var(--font-mono);
+    color: var(--ink-soft);
+    display: none;
+    word-break: break-all;
+  }
+  .filemeta.show { display: block; }
+
+  .divider-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 18px 0 12px;
+    color: var(--ink-faint);
+    font-size: 12.5px;
+    font-style: italic;
+  }
+  .divider-label::before, .divider-label::after { content: ""; flex: 1; height: 1px; background: var(--rule); }
+
+  .samples { display: grid; gap: 8px; }
+  .sample-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    background: transparent;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--ink);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+  .sample-btn:hover, .sample-btn:focus-visible { border-color: var(--blue); background: var(--blue-soft); }
+  .sample-btn .n {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    border: 1px solid var(--rule-strong);
+    border-radius: 999px;
+    width: 20px; height: 20px;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .scope-note {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    font-size: 12px;
+    color: var(--ink-faint);
+    line-height: 1.55;
+  }
+  .scope-note strong { color: var(--ink-soft); }
+
+  /* --- right: results --- */
+  .results-panel { min-height: 480px; padding: 26px 28px; }
+
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 420px;
+    color: var(--ink-faint);
+    gap: 10px;
+  }
+  .empty-state .ladder-glyph { display: flex; flex-direction: column; gap: 6px; margin-bottom: 6px; }
+  .empty-state .ladder-glyph span { width: 64px; height: 6px; border-radius: 3px; background: var(--rule); }
+  .empty-state .ladder-glyph span:nth-child(1) { width: 40px; }
+  .empty-state .ladder-glyph span:nth-child(2) { width: 52px; }
+  .empty-state h3 { font-size: 18px; color: var(--ink-soft); }
+  .empty-state p { max-width: 34ch; font-size: 13.5px; margin: 0; }
+
+  .error-state {
+    padding: 18px;
+    background: var(--amber-soft);
+    border: 1px solid var(--amber);
+    border-radius: 8px;
+    color: var(--amber);
+    font-size: 13.5px;
+  }
+
+  .result-head { display: flex; gap: 28px; flex-wrap: wrap; align-items: flex-start; }
+
+  .ladder { display: flex; flex-direction: column-reverse; gap: 6px; width: 220px; flex-shrink: 0; }
+  .rung {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 7px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    opacity: 0.55;
+    transition: opacity 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+  }
+  .rung .num {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--rule-strong);
+    flex-shrink: 0;
+  }
+  .rung .name { font-size: 12px; color: var(--ink-soft); }
+  .rung.reached { opacity: 1; }
+  .rung.reached .num { border-color: var(--green); color: var(--green); }
+  .rung.current { opacity: 1; background: var(--green-soft); border-color: var(--green); }
+  .rung.current .num { background: var(--green); color: var(--paper-raised); border-color: var(--green); }
+  .rung.current .name { color: var(--ink); font-weight: 500; }
+
+  .result-summary { flex: 1; min-width: 260px; }
+  .result-summary .skill-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+  .result-summary h2 { font-size: 26px; margin-bottom: 4px; }
+  .result-summary .level-desc { color: var(--ink-soft); font-size: 14px; max-width: 52ch; }
+
+  .indicator-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    margin: 26px 0;
+  }
+  .ind-card {
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: var(--paper);
+  }
+  .ind-card .k { font-size: 11px; color: var(--ink-faint); margin-bottom: 4px; line-height: 1.3; }
+  .ind-card .v { font-family: var(--font-mono); font-size: 17px; }
+  .ind-card .v .unit { font-size: 11px; color: var(--ink-faint); font-family: var(--font-body); margin-left: 2px; }
+  .flag-yes { color: var(--green); }
+  .flag-no { color: var(--ink-faint); }
+
+  .checks { display: grid; gap: 12px; margin-top: 22px; }
+  .check-card { border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+  .check-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px;
+    background: var(--paper);
+    border-bottom: 1px solid var(--rule);
+  }
+  .check-head .title { font-size: 13px; font-weight: 500; }
+  .check-head .score { font-family: var(--font-mono); font-size: 12px; color: var(--ink-soft); }
+  .check-list { list-style: none; margin: 0; padding: 10px 14px; display: grid; gap: 7px; }
+  .check-list li { display: flex; gap: 8px; font-size: 13px; align-items: flex-start; }
+  .check-list .mark { flex-shrink: 0; font-family: var(--font-mono); font-size: 12px; width: 16px; text-align: center; margin-top: 1px; }
+  .check-list li.yes .mark { color: var(--green); }
+  .check-list li.no .mark { color: var(--ink-faint); }
+  .check-list li.no span.txt { color: var(--ink-faint); }
+
+  .gap-box {
+    margin-top: 22px;
+    padding: 16px 18px;
+    border-radius: 8px;
+    background: var(--amber-soft);
+    border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent);
+  }
+  .gap-box.maxed { background: var(--green-soft); border-color: color-mix(in srgb, var(--green) 45%, transparent); }
+  .gap-box h3 { font-size: 13.5px; color: var(--amber); margin-bottom: 8px; }
+  .gap-box.maxed h3 { color: var(--green); }
+  .gap-box ul { margin: 0; padding-left: 18px; font-size: 13px; color: var(--ink-soft); display: grid; gap: 4px; }
+  .gap-box p { margin: 0; font-size: 13px; color: var(--ink-soft); }
+
+  .loading { display: flex; align-items: center; gap: 10px; color: var(--ink-soft); font-size: 13.5px; padding: 40px 0; justify-content: center; }
+  .spinner { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--rule-strong); border-top-color: var(--blue); animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  footer.credit { margin-top: 30px; font-size: 11.5px; color: var(--ink-faint); text-align: center; }
+
+  /* --- skill tabs --- */
+  .tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 16px; }
+  .tab-btn {
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+  }
+  .tab-btn:hover, .tab-btn:focus-visible { border-color: var(--blue); }
+  .tab-btn.active { background: var(--blue-soft); border-color: var(--blue); color: var(--ink); }
+  .tab-panel.hidden { display: none; }
+
+  .textarea-input {
+    width: 100%;
+    min-height: 130px;
+    resize: vertical;
+    border: 1.5px dashed var(--rule-strong);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.5;
+    padding: 12px;
+  }
+  .textarea-input:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; border-color: var(--blue); }
+  .textarea-input::placeholder { color: var(--ink-faint); }
+
+  .primary-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--blue);
+    background: var(--blue-soft);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+  .primary-btn:hover { background: color-mix(in srgb, var(--blue-soft) 60%, var(--blue) 20%); }
+  .primary-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .text-dropzone-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
+  .text-dropzone-row .or { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.06em; }
+  .file-chip {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    text-align: center;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+  .file-chip:hover, .file-chip:focus-visible { border-color: var(--blue); background: var(--blue-soft); }
+
+  /* --- skill status pills above a result --- */
+  .skill-pills { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .skill-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11.5px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--rule);
+    color: var(--ink-faint);
+  }
+  .skill-pill.active { border-color: var(--blue); color: var(--ink); background: var(--blue-soft); }
+  .skill-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--rule-strong); }
+  .skill-pill.active .dot { background: var(--blue); }
+
+  /* --- ESCO mapping --- */
+  .esco-section { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--rule); }
+  .esco-section h3 { font-size: 15px; margin-bottom: 4px; }
+  .esco-section .esco-hint { font-size: 12px; color: var(--ink-faint); margin: 0 0 14px; max-width: 62ch; line-height: 1.5; }
+  .esco-grid { display: grid; gap: 8px; }
+  .esco-card {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 10px 12px;
+    background: var(--paper);
+  }
+  .esco-rel {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.02em;
+    padding: 3px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+    margin-top: 1px;
+  }
+  .esco-rel.jaka { background: var(--green-soft); color: var(--green); }
+  .esco-rel.djelomicna { background: var(--amber-soft); color: var(--amber); }
+  .esco-rel.nema-dokaza { background: transparent; color: var(--ink-faint); border: 1px solid var(--rule); }
+  .esco-body .label-en { font-size: 13px; font-weight: 500; }
+  .esco-body .label-hr { font-size: 11.5px; color: var(--ink-faint); margin-left: 4px; }
+  .esco-body ul { margin: 4px 0 0; padding-left: 16px; font-size: 12px; color: var(--ink-soft); display: grid; gap: 2px; }
+
+  /* --- certificate download --- */
+  .download-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--rule); }
+  .secondary-btn {
+    padding: 9px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--rule-strong);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+  .secondary-btn:hover, .secondary-btn:focus-visible { border-color: var(--blue); background: var(--blue-soft); }
+  .download-note { font-size: 12px; color: var(--amber); }
+</style>
+
+<div class="shell">
+  <header class="top">
+    <div class="brand">
+      <svg class="mark" width="30" height="30" viewBox="0 0 200 200" aria-hidden="true">
+        <defs>
+          <linearGradient id="markGradHeader" x1="0%" y1="50%" x2="100%" y2="50%">
+            <stop offset="0%" stop-color="#2f5fe0" />
+            <stop offset="50%" stop-color="#9b3fe0" />
+            <stop offset="100%" stop-color="#e63a8c" />
+          </linearGradient>
+        </defs>
+        <circle cx="100" cy="100" r="86" fill="none" stroke="url(#markGradHeader)" stroke-width="9" />
+        <path d="M 48 66 Q 55 100 100 118 Q 145 100 152 66" fill="none" stroke="url(#markGradHeader)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M 58 148 Q 68 122 100 118 Q 132 122 142 148" fill="none" stroke="url(#markGradHeader)" stroke-width="15" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="100" cy="22" r="17" fill="#7c3fe0" />
+        <circle cx="30" cy="146" r="17" fill="#2f5fe0" />
+        <circle cx="170" cy="146" r="17" fill="#e63a8c" />
+        <g stroke="#fff" stroke-width="2.6" stroke-linecap="round">
+          <line x1="92" y1="17" x2="108" y2="17" />
+          <line x1="92" y1="22" x2="108" y2="22" />
+          <line x1="92" y1="27" x2="103" y2="27" />
+        </g>
+        <g stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M 27 140 L 22 146 L 27 152" />
+          <path d="M 34 140 L 39 146 L 34 152" />
+        </g>
+        <g fill="#fff">
+          <rect x="163" y="148" width="3.4" height="8" />
+          <rect x="169" y="143" width="3.4" height="13" />
+          <rect x="175" y="139" width="3.4" height="17" />
+        </g>
+      </svg>
+      <h1>Merific</h1>
+      <span class="tag">Prototip · BARS analizator</span>
+    </div>
+    <p>Automatska procjena BARS razine (1–4) za dvije vještine: modeliranje financijskih tablica (Excel/Sheets) i analitička interpretacija nalaza (pismenih izvještaja) — uz mapiranje na ESCO vještine.</p>
+  </header>
+
+  <div class="layout">
+    <div class="panel input-panel">
+      <div class="tabs">
+        <button class="tab-btn active" id="tabBtnExcel" data-tab="excel">📊 Tablica — Vještina 1</button>
+        <button class="tab-btn" id="tabBtnText" data-tab="text">📝 Tekst — Vještina 2</button>
+      </div>
+
+      <div class="tab-panel" id="tabExcel">
+        <h2>Analiza modela</h2>
+        <p class="hint">🔒 Datoteka se obrađuje lokalno u pregledniku — podaci se ne šalju na poslužitelj.</p>
+
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Učitaj Excel datoteku">
+          <div class="icon">📄</div>
+          <div class="label">Prevuci .xlsx datoteku ovdje ili klikni za odabir</div>
+          <div class="sub">.xlsx / .xlsm</div>
+          <input type="file" id="fileInput" accept=".xlsx,.xlsm" />
+        </div>
+        <div class="filemeta" id="fileMeta"></div>
+
+        <div class="divider-label">ili isprobaj primjer</div>
+        <div class="samples" id="sampleButtons">
+          <button class="sample-btn" data-level="1"><span>Razina 1 — jednokratna tablica</span><span class="n">1</span></button>
+          <button class="sample-btn" data-level="2"><span>Razina 2 — operativni model</span><span class="n">2</span></button>
+          <button class="sample-btn" data-level="3"><span>Razina 3 — samostalan analitičar</span><span class="n">3</span></button>
+          <button class="sample-btn" data-level="4"><span>Razina 4 — napredno modeliranje</span><span class="n">4</span></button>
+        </div>
+
+        <div class="scope-note">
+          <strong>Opseg prototipa:</strong> automatsko bodovanje sadržajnih pokazatelja za Vještinu 1 (arhitektura listova, složenost formula) na temelju zadanih pravila.<br />
+          <strong>Ograničenja:</strong> prototip ne uključuje procesne pokazatelje, semantičku NLP analizu, provjeru integriteta uz pomoć umjetne inteligencije (AI) niti trenirane ML modele. Te funkcionalnosti zahtijevaju naprednu infrastrukturu i stručno označen skup podataka.
+        </div>
+      </div>
+
+      <div class="tab-panel hidden" id="tabText">
+        <h2>Analiza teksta</h2>
+        <p class="hint">🔒 Tekst se obrađuje lokalno u pregledniku, ili ubaci .docx/.txt — podaci se ne šalju na poslužitelj.</p>
+
+        <textarea class="textarea-input" id="textInput" placeholder="Zalijepi ovdje tekst analitičkog izvještaja ili memoranduma…"></textarea>
+        <button class="primary-btn" id="analyzeTextBtn">Analiziraj tekst</button>
+
+        <div class="text-dropzone-row">
+          <span class="or">ili</span>
+          <label class="file-chip" for="textFileInput">📄 Ubaci .docx / .txt</label>
+          <input type="file" id="textFileInput" accept=".docx,.txt" />
+        </div>
+        <div class="filemeta" id="textFileMeta"></div>
+
+        <div class="divider-label">ili isprobaj primjer</div>
+        <div class="samples" id="textSampleButtons">
+          <button class="sample-btn" data-level="1"><span>Razina 1 — opisni izvjestitelj</span><span class="n">1</span></button>
+          <button class="sample-btn" data-level="2"><span>Razina 2 — kontekstualni analitičar</span><span class="n">2</span></button>
+          <button class="sample-btn" data-level="3"><span>Razina 3 — samostalan analitičar</span><span class="n">3</span></button>
+          <button class="sample-btn" data-level="4"><span>Razina 4 — strateški savjetnik</span><span class="n">4</span></button>
+        </div>
+
+        <div class="scope-note">
+          <strong>Opseg prototipa:</strong> ključne riječi/obrasci nad tekstom (usporedba s benchmarkom, uzročni jezik, scenariji, osjetljivosna analiza…) za Vještinu 2.<br />
+          <strong>Ograničenja:</strong> nije semantičko NLP (BERT) razumijevanje teksta iz metodologije — vidi <span class="mono">merific/text_indicators.py</span> u repozitoriju.
+        </div>
+      </div>
+    </div>
+
+    <div class="panel results-panel" id="resultsPanel">
+      <div class="empty-state" id="emptyState">
+        <div class="ladder-glyph"><span></span><span></span><span></span></div>
+        <h3>Nema analiziranog materijala</h3>
+        <p>Učitaj Excel model ili tekst izvještaja (ili odaberi jedan od primjera) kako bi se prikazali procijenjena BARS razina, dokazi i ESCO vještine.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="credit">Merific · pravilima utemeljen prototip, ne zamjenjuje ekspertsku BARS procjenu</footer>
+</div>
+
+<script>
+"use strict";
+
+/* ============================== ZIP / OOXML ============================== */
+
+function readU16(view, o) { return view.getUint16(o, true); }
+function readU32(view, o) { return view.getUint32(o, true); }
+
+async function inflateRaw(bytes) {
+  const ds = new DecompressionStream("deflate-raw");
+  const writer = ds.writable.getWriter();
+  writer.write(bytes);
+  writer.close();
+  const chunks = [];
+  const reader = ds.readable.getReader();
+  let total = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    total += value.length;
+  }
+  const out = new Uint8Array(total);
+  let off = 0;
+  for (const c of chunks) { out.set(c, off); off += c.length; }
+  return out;
+}
+
+async function openZip(buffer) {
+  const view = new DataView(buffer);
+  const bytes = new Uint8Array(buffer);
+  const len = buffer.byteLength;
+  const minOffset = Math.max(0, len - 22 - 65535);
+  let eocd = -1;
+  for (let i = len - 22; i >= minOffset; i--) {
+    if (readU32(view, i) === 0x06054b50) { eocd = i; break; }
+  }
+  if (eocd === -1) throw new Error("Datoteka nije valjan .xlsx (ZIP EOCD zapis nije pronađen).");
+
+  const cdEntries = readU16(view, eocd + 10);
+  const cdOffset = readU32(view, eocd + 16);
+
+  const index = new Map();
+  let ptr = cdOffset;
+  for (let i = 0; i < cdEntries; i++) {
+    if (readU32(view, ptr) !== 0x02014b50) throw new Error("Neispravan ZIP central-directory zapis.");
+    const method = readU16(view, ptr + 10);
+    const compressedSize = readU32(view, ptr + 20);
+    const nameLen = readU16(view, ptr + 28);
+    const extraLen = readU16(view, ptr + 30);
+    const commentLen = readU16(view, ptr + 32);
+    const localHeaderOffset = readU32(view, ptr + 42);
+    const name = new TextDecoder("utf-8").decode(bytes.subarray(ptr + 46, ptr + 46 + nameLen));
+    index.set(name, { method, compressedSize, localHeaderOffset });
+    ptr += 46 + nameLen + extraLen + commentLen;
+  }
+
+  return {
+    names: [...index.keys()],
+    has(name) { return index.has(name); },
+    async read(name) {
+      const entry = index.get(name);
+      if (!entry) return null;
+      const lh = entry.localHeaderOffset;
+      const lhNameLen = readU16(view, lh + 26);
+      const lhExtraLen = readU16(view, lh + 28);
+      const dataStart = lh + 30 + lhNameLen + lhExtraLen;
+      const compressed = bytes.subarray(dataStart, dataStart + entry.compressedSize);
+      if (entry.method === 0) return compressed;
+      if (entry.method === 8) return await inflateRaw(compressed);
+      throw new Error("Nepodržana ZIP metoda kompresije: " + entry.method);
+    },
+    async readText(name) {
+      const b = await this.read(name);
+      return b ? new TextDecoder("utf-8").decode(b) : null;
+    },
+  };
+}
+
+function parseXML(text) {
+  return new DOMParser().parseFromString(text, "application/xml");
+}
+
+/* ============================== indicators.py, ported ============================== */
+
+const INPUT_KEYWORDS = ["input", "assum", "pretpostavk", "parametr", "param", "ulaz"];
+const CALC_KEYWORDS = ["calc", "izracun", "izračun", "model", "p&l", "pl", "cashflow", "cash flow", "cash-flow", "trosk", "troš", "prihod", "revenue", "cost", "kpi", "budget", "proracun", "proračun"];
+const OUTPUT_KEYWORDS = ["output", "report", "izvjest", "izvješt", "summary", "sazetak", "sažetak", "dashboard", "rezultat"];
+const README_KEYWORDS = ["readme", "upute", "dokumentacij", "opis", "instructions", "about"];
+
+const LOOKUP_FUNCS = new Set(["VLOOKUP", "HLOOKUP", "XLOOKUP", "INDEX", "MATCH"]);
+const CONDITIONAL_FUNCS = new Set(["IF", "IFS", "SUMIF", "COUNTIF", "AVERAGEIF"]);
+const ADVANCED_FUNCS = new Set(["SUMIFS", "COUNTIFS", "AVERAGEIFS", "OFFSET", "INDIRECT", "IFERROR", "CHOOSE"]);
+const DYNAMIC_LAMBDA_FUNCS = new Set(["LAMBDA", "LET", "SEQUENCE", "FILTER", "UNIQUE", "SORT", "SORTBY", "XMATCH", "TEXTSPLIT"]);
+
+const FUNC_NAME_RE = /\b([A-Z][A-Z0-9._]*)\s*\(/g;
+const CELL_REF_RE = /\b[A-Z]{1,3}\d{1,7}\b/g;
+const BASIC_ARITH_HINT = /^=\s*[A-Z]*\d*\s*[+\-*/]\s*/;
+
+function classifySheetName(name) {
+  const l = name.toLowerCase();
+  const roles = new Set();
+  if (INPUT_KEYWORDS.some((k) => l.includes(k))) roles.add("input");
+  if (CALC_KEYWORDS.some((k) => l.includes(k))) roles.add("calc");
+  if (OUTPUT_KEYWORDS.some((k) => l.includes(k))) roles.add("output");
+  if (README_KEYWORDS.some((k) => l.includes(k))) roles.add("readme");
+  return roles;
+}
+
+function parenDepth(formula) {
+  let depth = 0, max = 0;
+  for (const ch of formula) {
+    if (ch === "(") { depth++; if (depth > max) max = depth; }
+    else if (ch === ")") { depth = Math.max(0, depth - 1); }
+  }
+  return max;
+}
+
+function formulaShape(formula) {
+  return formula.replace(CELL_REF_RE, "REF").replace(/\$/g, "");
+}
+
+function patternConsistency(formulas) {
+  if (!formulas.length) return 0;
+  const shapes = new Map();
+  for (const f of formulas) shapes.set(formulaShape(f), (shapes.get(formulaShape(f)) || 0) + 1);
+  let repeated = 0;
+  for (const count of shapes.values()) if (count >= 2) repeated += count;
+  return repeated / formulas.length;
+}
+
+function colorDominance(counter) {
+  if (!counter.size) return [null, 0];
+  let bestColor = null, bestCount = -1, total = 0;
+  for (const [color, count] of counter) { total += count; if (count > bestCount) { bestCount = count; bestColor = color; } }
+  return [bestColor, bestCount / total];
+}
+
+function colorConventionScore(inputColors, formulaColors) {
+  const [inputColor, inputDom] = colorDominance(inputColors);
+  const [formulaColor, formulaDom] = colorDominance(formulaColors);
+  if (inputColor === null || formulaColor === null) return 0;
+  const distinctBonus = inputColor !== formulaColor ? 1 : 0;
+  return ((inputDom + formulaDom) / 2) * distinctBonus;
+}
+
+function bump(map, key) { map.set(key, (map.get(key) || 0) + 1); }
+
+async function buildStyleColorMap(zip) {
+  const xml = await zip.readText("xl/styles.xml");
+  if (!xml) return [];
+  const doc = parseXML(xml);
+  const fontsEl = doc.getElementsByTagName("fonts")[0];
+  const fonts = [];
+  if (fontsEl) {
+    for (const fontEl of Array.from(fontsEl.children)) {
+      const colorEl = fontEl.getElementsByTagName("color")[0];
+      const rgb = colorEl && colorEl.getAttribute("rgb") ? colorEl.getAttribute("rgb") : null;
+      fonts.push(rgb);
+    }
+  }
+  const cellXfsEl = doc.getElementsByTagName("cellXfs")[0];
+  const styleColors = [];
+  if (cellXfsEl) {
+    for (const xf of Array.from(cellXfsEl.children)) {
+      const fontId = parseInt(xf.getAttribute("fontId") || "0", 10);
+      styleColors.push(fonts[fontId] || "AUTO");
+    }
+  }
+  return styleColors;
+}
+
+async function buildSharedStrings(zip) {
+  if (!zip.has("xl/sharedStrings.xml")) return [];
+  const xml = await zip.readText("xl/sharedStrings.xml");
+  const doc = parseXML(xml);
+  const items = [];
+  for (const si of Array.from(doc.getElementsByTagName("si"))) {
+    let text = "";
+    for (const t of Array.from(si.getElementsByTagName("t"))) text += t.textContent || "";
+    items.push(text);
+  }
+  return items;
+}
+
+function expandRange(sqrefToken) {
+  // sqrefToken like "B1" or "B3:D3" -> list of {ref, col, row}
+  const m = sqrefToken.match(/^\$?([A-Z]{1,3})\$?(\d{1,7})(?::\$?([A-Z]{1,3})\$?(\d{1,7}))?$/);
+  if (!m) return [];
+  const colToNum = (c) => { let n = 0; for (const ch of c) n = n * 26 + (ch.charCodeAt(0) - 64); return n; };
+  const numToCol = (n) => { let s = ""; while (n > 0) { const r = (n - 1) % 26; s = String.fromCharCode(65 + r) + s; n = Math.floor((n - 1) / 26); } return s; };
+  const c1 = colToNum(m[1]), r1 = parseInt(m[2], 10);
+  const c2 = m[3] ? colToNum(m[3]) : c1, r2 = m[4] ? parseInt(m[4], 10) : r1;
+  const cells = [];
+  const maxCells = 500;
+  for (let c = Math.min(c1, c2); c <= Math.max(c1, c2) && cells.length < maxCells; c++) {
+    for (let r = Math.min(r1, r2); r <= Math.max(r1, r2) && cells.length < maxCells; r++) {
+      cells.push(numToCol(c) + r);
+    }
+  }
+  return cells;
+}
+
+async function extractIndicators(buffer, fileName) {
+  const zip = await openZip(buffer);
+  if (!zip.has("xl/workbook.xml")) throw new Error("Datoteka nema xl/workbook.xml — nije standardni .xlsx paket.");
+
+  const wbDoc = parseXML(await zip.readText("xl/workbook.xml"));
+  const relsText = await zip.readText("xl/_rels/workbook.xml.rels");
+  const relsDoc = relsText ? parseXML(relsText) : null;
+  const relTargets = new Map();
+  if (relsDoc) {
+    for (const rel of Array.from(relsDoc.getElementsByTagName("Relationship"))) {
+      relTargets.set(rel.getAttribute("Id"), rel.getAttribute("Target"));
+    }
+  }
+
+  const sheetEls = Array.from(wbDoc.getElementsByTagName("sheet"));
+  const sheets = sheetEls.map((el) => {
+    const rId = el.getAttribute("r:id") || el.getAttribute("relId") || "";
+    let target = relTargets.get(rId) || "";
+    const path = target.startsWith("/") ? target.slice(1) : "xl/" + target;
+    return { name: el.getAttribute("name") || "Sheet", path };
+  });
+
+  const nDefinedNames = wbDoc.getElementsByTagName("definedName").length;
+  const styleColors = await buildStyleColorMap(zip);
+  const sharedStrings = await buildSharedStrings(zip);
+  void sharedStrings; // parsed for completeness/parity; not needed by current indicators
+
+  const sheetRoles = {};
+  for (const s of sheets) sheetRoles[s.name] = classifySheetName(s.name);
+  const hasInputSheet = Object.values(sheetRoles).some((r) => r.has("input"));
+  const hasCalcSheet = Object.values(sheetRoles).some((r) => r.has("calc"));
+  const hasOutputSheet = Object.values(sheetRoles).some((r) => r.has("output"));
+  const hasReadmeSheet = Object.values(sheetRoles).some((r) => r.has("readme"));
+
+  const allFormulas = [];
+  let nNumericConstants = 0;
+  const inputColors = new Map();
+  const formulaColors = new Map();
+  let crossSheetRefCount = 0;
+  const dataValidationCells = []; // {coord}
+
+  for (const sheet of sheets) {
+    if (!sheet.path || !zip.has(sheet.path)) continue;
+    const xml = await zip.readText(sheet.path);
+    const doc = parseXML(xml);
+
+    for (const dv of Array.from(doc.getElementsByTagName("dataValidation"))) {
+      if (dv.getAttribute("type") !== "list") continue;
+      const sqref = dv.getAttribute("sqref") || "";
+      for (const token of sqref.split(/\s+/).filter(Boolean)) {
+        for (const coord of expandRange(token)) dataValidationCells.push(coord);
+      }
+    }
+
+    for (const cell of Array.from(doc.getElementsByTagName("c"))) {
+      const fEl = cell.getElementsByTagName("f")[0];
+      const sAttr = cell.getAttribute("s");
+      const styleIdx = sAttr ? parseInt(sAttr, 10) : 0;
+      const color = styleColors[styleIdx] || "AUTO";
+
+      if (fEl) {
+        const formulaText = "=" + (fEl.textContent || "");
+        allFormulas.push(formulaText);
+        bump(formulaColors, color);
+        if (formulaText.includes("!")) crossSheetRefCount++;
+      } else {
+        const t = cell.getAttribute("t");
+        if (!t || t === "n") {
+          const vEl = cell.getElementsByTagName("v")[0];
+          const raw = vEl ? vEl.textContent : null;
+          if (raw !== null && raw !== "" && !Number.isNaN(Number(raw))) {
+            nNumericConstants++;
+            bump(inputColors, color);
+          }
+        }
+      }
+    }
+  }
+
+  const functionCounts = new Map();
+  let maxNesting = 0, nestingSum = 0, nBasicArithOnly = 0, usesAbsoluteRefs = false;
+  for (const f of allFormulas) {
+    let m;
+    FUNC_NAME_RE.lastIndex = 0;
+    while ((m = FUNC_NAME_RE.exec(f)) !== null) bump(functionCounts, m[1].toUpperCase());
+    const depth = parenDepth(f);
+    maxNesting = Math.max(maxNesting, depth);
+    nestingSum += depth;
+    if (BASIC_ARITH_HINT.test(f) && !f.includes("(")) nBasicArithOnly++;
+    if (f.includes("$")) usesAbsoluteRefs = true;
+  }
+  const funcsUsed = new Set(functionCounts.keys());
+  const usesConditional = [...funcsUsed].some((f) => CONDITIONAL_FUNCS.has(f));
+  const usesLookup = [...funcsUsed].some((f) => LOOKUP_FUNCS.has(f));
+  const usesAdvanced = [...funcsUsed].some((f) => ADVANCED_FUNCS.has(f)) || (funcsUsed.has("INDEX") && funcsUsed.has("MATCH"));
+  const usesLambdaOrDynamic = [...funcsUsed].some((f) => DYNAMIC_LAMBDA_FUNCS.has(f));
+
+  const totalValueCells = nNumericConstants + allFormulas.length;
+  const hardcodedRatio = totalValueCells ? nNumericConstants / totalValueCells : 0;
+  const colorScore = colorConventionScore(inputColors, formulaColors);
+  const patConsistency = patternConsistency(allFormulas);
+
+  const hasPowerQuery =
+    zip.names.some((n) => n.startsWith("xl/queries/") || n.startsWith("customXml/")) ||
+    (zip.has("xl/connections.xml") && (await zip.readText("xl/connections.xml") || "").match(/Mashup|PowerQuery/));
+  const hasVba = zip.has("xl/vbaProject.bin");
+  const nStructuredTables = zip.names.filter((n) => n.startsWith("xl/tables/") && n.endsWith(".xml")).length;
+
+  let selectorFanout = 0;
+  const hasScenarioSelector = dataValidationCells.length > 0;
+  for (const coord of dataValidationCells) {
+    let fanout = 0;
+    const re = new RegExp("\\b" + coord + "\\b");
+    for (const f of allFormulas) if (re.test(f.replace(/\$/g, ""))) fanout++;
+    selectorFanout = Math.max(selectorFanout, fanout);
+  }
+
+  return {
+    fileName,
+    structural: {
+      nSheets: sheets.length,
+      sheetRoles,
+      hasInputSheet, hasCalcSheet, hasOutputSheet, hasReadmeSheet,
+      nNamedRanges: nDefinedNames,
+      nStructuredTables,
+      crossSheetRefCount,
+      hardcodedRatio,
+      colorConventionScore: colorScore,
+      hasScenarioSelector,
+      scenarioSelectorFanout: selectorFanout,
+    },
+    formula: {
+      nFormulas: allFormulas.length,
+      functionCounts,
+      maxNestingDepth: maxNesting,
+      avgNestingDepth: allFormulas.length ? nestingSum / allFormulas.length : 0,
+      nBasicArithmeticOnly: nBasicArithOnly,
+      usesConditional, usesLookup, usesAdvanced, usesLambdaOrDynamic,
+      usesAbsoluteRefs,
+      hasPowerQuery: !!hasPowerQuery,
+      hasVba,
+      patternConsistency: patConsistency,
+    },
+  };
+}
+
+/* ============================== bars_scoring.py, ported ============================== */
+
+const LEVEL_NAMES = {
+  1: "Razina 1 — Osnovni korisnik",
+  2: "Razina 2 — Operativni korisnik",
+  3: "Razina 3 — Samostalan analitičar (ciljna razina)",
+  4: "Razina 4 — Napredna razina (samostalno modeliranje)",
+};
+
+function mkCheck(level) { return { level, satisfied: [], missing: [], weights: {} }; }
+function checkWeight(c, label) { return Object.prototype.hasOwnProperty.call(c.weights, label) ? c.weights[label] : 1.0; }
+function checkScore(c) {
+  const satisfiedWeight = c.satisfied.reduce((sum, label) => sum + checkWeight(c, label), 0);
+  const totalWeight = satisfiedWeight + c.missing.reduce((sum, label) => sum + checkWeight(c, label), 0);
+  return totalWeight ? satisfiedWeight / totalWeight : 0;
+}
+
+function checkLevel2(m) {
+  const c = mkCheck(2);
+  const s = m.structural, f = m.formula;
+  (s.nSheets >= 1 && s.nSheets <= 2 ? c.satisfied : c.missing).push("model na 1-2 radna lista");
+  (f.usesAbsoluteRefs ? c.satisfied : c.missing).push("koristi apsolutne reference ($A$1)");
+  (f.usesConditional || f.usesLookup ? c.satisfied : c.missing).push("koristi uvjetne funkcije i/ili lookup (IF/SUMIF/VLOOKUP)");
+  (s.hardcodedRatio < 0.6 ? c.satisfied : c.missing).push("inputi barem djelomično odvojeni od izračuna (udio hardkodiranog < 0.6)");
+  return c;
+}
+
+function checkLevel3(m) {
+  const c = mkCheck(3);
+  const s = m.structural, f = m.formula;
+  (s.nSheets >= 3 ? c.satisfied : c.missing).push("višelistni model (>= 3 radna lista)");
+  (s.hasInputSheet && (s.hasCalcSheet || s.hasOutputSheet) ? c.satisfied : c.missing).push("odvojeni listovi za pretpostavke i izračune/izvještaj");
+  (s.crossSheetRefCount > 0 ? c.satisfied : c.missing).push("formule povezuju listove (cross-sheet reference)");
+  (s.nNamedRanges > 0 || s.nStructuredTables > 0 ? c.satisfied : c.missing).push("imenovani rasponi ili strukturirane tablice umjesto 'magičnih' referenci");
+  (s.colorConventionScore >= 0.5 ? c.satisfied : c.missing).push("dosljedna konvencija boja za inpute vs. formule");
+  (s.hardcodedRatio < 0.2 ? c.satisfied : c.missing).push("nizak udio hardkodiranih vrijednosti u izračunima (< 0.2)");
+  (f.patternConsistency >= 0.6 ? c.satisfied : c.missing).push("dosljedna propagacija formula (kopirane/ispunjene, ne ad hoc)");
+  if (s.hasScenarioSelector) c.satisfied.push("scenarijski selektor (data validation ćelija) prisutan");
+  return c;
+}
+
+function checkLevel4(m) {
+  const c = mkCheck(4);
+  const s = m.structural, f = m.formula;
+  const modular = s.hasInputSheet && s.hasCalcSheet && s.hasOutputSheet;
+  (modular ? c.satisfied : c.missing).push("modularna arhitektura: odvojeni input/calc/output moduli");
+  (f.hasPowerQuery ? c.satisfied : c.missing).push("Power Query prisutan");
+  (f.usesLambdaOrDynamic ? c.satisfied : c.missing).push("LAMBDA / dinamičke funkcije (LET, FILTER, SEQUENCE...) prisutne");
+  (f.hasVba ? c.satisfied : c.missing).push("VBA/makro automatizacija prisutna");
+  (s.hasReadmeSheet ? c.satisfied : c.missing).push("dokumentacijski list (README/upute) prisutan");
+  return c;
+}
+
+const PASS_THRESHOLD = { 2: 0.6, 3: 0.55, 4: 0.6 };
+
+function scoreSkill1(m) {
+  const checks = { 2: checkLevel2(m), 3: checkLevel3(m), 4: checkLevel4(m) };
+  let level = 1;
+  if (checkScore(checks[2]) >= PASS_THRESHOLD[2]) {
+    level = 2;
+    if (checkScore(checks[3]) >= PASS_THRESHOLD[3]) {
+      level = 3;
+      if (checkScore(checks[4]) >= PASS_THRESHOLD[4]) level = 4;
+    }
+  }
+  const nextLevel = level + 1;
+  const gap = checks[nextLevel] ? checks[nextLevel].missing.slice() : [];
+  return { skill: "Vještina 1: Modeliranje financijskih tablica", level, levelName: LEVEL_NAMES[level], checks, gapToNextLevel: gap };
+}
+
+/* ============================== text_indicators.py, ported ============================== */
+
+const BENCHMARK_KEYWORDS = [
+  "plan", "budžet", "prosjek", "prethodn", "prošl", "cilj", "target", "benchmark", "u odnosu na", "industrij",
+  "referentn", "usporedb", "u usporedbi s", "nasuprot", "godinu ranije", "prošlogodišnj", "planiran",
+  "tržišni prosjek", "konkurentsk",
+];
+// "uzro"/"razlo" not "uzrok"/"razlog": Croatian's k/g -> c/z alternation before
+// a case ending starting in i/e means the bare word only matches nominative
+// singular -- "uzroci", "razlozima" etc. need the shorter stem.
+const CAUSAL_KEYWORDS = [
+  "zbog", "uzro", "razlo", "posljedic", "rezultat toga", "utjecaj", "proizlazi", "uslijed", "dovodi do", "vodi do",
+  "kao rezultat", "iz razloga", "objašnjava se", "generira", "izaziva", "potaknuto",
+];
+const CAUSAL_PHRASE_PATTERNS = [
+  /glavni\s+uzrok/i,
+  /temeljni\s+uzrok/i,
+  /korijenski\s+uzrok/i,
+  /(?:je|su)\s+(?:posljedica|rezultat)\s+\w+/i,
+];
+const CONTRAST_PATTERNS = [
+  /nije\s+\w+(\s+\w+){0,4}\s+nego/i,
+  /ne\s+zbog[\s\S]{0,80}nego/i,
+  /a\s+ne\s+zbog/i,
+  /simptom[\s\S]{0,120}uzrok/i,
+  /za razliku od/i,
+];
+const RECOMMENDATION_KEYWORDS = [
+  "preporuč", "predlaž", "potrebno je", "sljedeći korak", "akcijski plan",
+  "savjetujemo", "trebalo bi", "nužno je", "akcijski korac", "plan djelovanja", "prijedlo", "preporučeno je",
+];
+const RECOMMENDATION_PHRASE_PATTERNS = [/preporuč(?:amo|ujemo)\s+da\b/i, /predlažemo\s+da\b/i];
+const SCENARIO_KEYWORDS = [
+  "scenarij", "best case", "worst case", "base case", "neizvjesnost", "raspon ishoda", "rizi",
+  "optimističn", "pesimističn", "konzervativn", "raspon procjena", "interval pouzdanosti", "vjerojatnost", "što ako",
+];
+const STRUCTURE_KEYWORDS = [
+  "zaključak", "sažetak", "preporuka", "nalaz", "ključna poruka", "sinteza", "pregled nalaza", "izvršni sažetak", "glavna poruka",
+];
+const SENSITIVITY_KEYWORDS = [
+  "osjetljivost", "osjetljivosna", "diskontna stopa", "terminalni rast", "mijenja predznak", "prag osjetljivosti",
+  "tipping point", "threshold", "elastičnost", "granična vrijednost", "prijelomna točka", "break-even",
+  "točka pokrića", "kritična pretpostavka",
+];
+const SENSITIVITY_PHRASE_PATTERNS = [/najveći\s+utjecaj\s+na/i];
+const AUDIENCE_KEYWORDS = [
+  "uprav", "cfo", "investitor", "operativni tim", "operativnom timu", "nefinancijsk",
+  "dioničar", "upravni odbor", "nadzorni odbor", "menadžment", "vanjski partner", "regulator",
+];
+const DATA_QUALITY_KEYWORDS = [
+  "ograničenj", "nedovoljno pouzdan", "nedovoljne pouzdanosti", "nije moguće sa sigurnošću", "nisku pouzdanost", "nedostatn",
+  "podaci nisu potpuni", "manjkavi podaci", "aproksimacija", "procjena s rezervom", "dodatna provjera", "nesigurnost u podacima",
+];
+const STRATEGIC_CONTEXT_KEYWORDS = ["strateš", "operativn", "konkurent", "tržišt", "industrijsk", "regulatorn", "makroekonomsk", "geopolitičk"];
+const FINANCE_VOCAB = [
+  "ebitda", "cash-flow", "cash flow", "novčani tok", "marž", // "marž" covers marža/marže/marži/maržu/maržom
+  "prihod", "trošak", "trošk", // "trošak" (nom.sg, fleeting vowel) + "trošk" (troška/trošku/troškovi/...)
+  "dobit", "roe", "povrat na kapital", "tržišni udio", "npv", "dcf", "wacc", "bilanca", "račun dobiti i gubitka",
+  "operativna marž", "neto marž", "likvidnost", "zaduženost", "kapitalni izdaci", "capex", "opex", "amortizacija",
+  "obrtni kapital", "interna stopa povrata", "irr", "rentabilnost", "solventnost",
+];
+
+const NUMERIC_TOKEN_RE = /\d+(?:[.,]\d+)?\s?%?/g;
+const QUANTIFIED_IMPACT_PHRASE_RE = /\d+(?:[.,]\d+)?\s?%?\s+(?:ebitda|marž\w*|prihod\w*|dobit\w*|npv|troš\w*)/i;
+const BAD_CHART_RE = /tortni grafikon/i;
+const TREND_WORDS_RE = /trend|kroz vrijeme|tijekom/i;
+
+function countDistinctHits(text, keywords) {
+  const lt = text.toLowerCase();
+  return keywords.reduce((n, kw) => n + (lt.includes(kw.toLowerCase()) ? 1 : 0), 0);
+}
+function anyHit(text, keywords, phrasePatterns) {
+  if (countDistinctHits(text, keywords) > 0) return true;
+  return !!phrasePatterns && phrasePatterns.some((re) => re.test(text));
+}
+
+function extractTextIndicators(text, sourceName) {
+  let paragraphs = text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
+  if (!paragraphs.length) paragraphs = text.split(/\n/).map((p) => p.trim()).filter(Boolean);
+
+  const conclusionParagraphHasNumber = paragraphs.some(
+    (p) => anyHit(p, [...STRUCTURE_KEYWORDS, ...RECOMMENDATION_KEYWORDS]) && NUMERIC_TOKEN_RE.test(p)
+  );
+  const badChart = BAD_CHART_RE.test(text) && TREND_WORDS_RE.test(text);
+
+  return {
+    sourceName,
+    nWords: text.split(/\s+/).filter(Boolean).length,
+    nParagraphs: paragraphs.length,
+    hasBenchmarkLanguage: anyHit(text, BENCHMARK_KEYWORDS),
+    hasCausalLanguage: anyHit(text, CAUSAL_KEYWORDS, CAUSAL_PHRASE_PATTERNS),
+    hasContrastPattern: CONTRAST_PATTERNS.some((re) => re.test(text)),
+    nNumericTokens: (text.match(NUMERIC_TOKEN_RE) || []).length,
+    hasQuantifiedFinancialImpact: QUANTIFIED_IMPACT_PHRASE_RE.test(text),
+    hasRecommendationLanguage: anyHit(text, RECOMMENDATION_KEYWORDS, RECOMMENDATION_PHRASE_PATTERNS),
+    hasScenarioLanguage: anyHit(text, SCENARIO_KEYWORDS),
+    hasStructureMarkers: anyHit(text, STRUCTURE_KEYWORDS),
+    conclusionParagraphHasNumber,
+    hasSensitivityLanguage: anyHit(text, SENSITIVITY_KEYWORDS, SENSITIVITY_PHRASE_PATTERNS),
+    nDistinctAudienceKeywords: countDistinctHits(text, AUDIENCE_KEYWORDS),
+    hasDataQualityLanguage: anyHit(text, DATA_QUALITY_KEYWORDS),
+    hasStrategicContextLanguage: anyHit(text, STRATEGIC_CONTEXT_KEYWORDS),
+    nDistinctFinanceTerms: countDistinctHits(text, FINANCE_VOCAB),
+    hasPoorChartChoiceFlag: badChart,
+  };
+}
+
+/* ============================== bars_scoring.py Skill 2, ported ============================== */
+
+const SKILL2_LEVEL_NAMES = {
+  1: "Razina 1 — Opisni izvjestitelj",
+  2: "Razina 2 — Kontekstualni analitičar",
+  3: "Razina 3 — Samostalan analitičar (ciljna razina)",
+  4: "Razina 4 — Napredni analitičar / strateški savjetnik",
+};
+
+function checkSkill2Level2(t) {
+  const c = mkCheck(2);
+  const lBenchmark = "usporedba s benchmarkom (plan, prošla godina, prosjek)";
+  const lCausal = "objašnjava uzrok odstupanja";
+  const lQuant = "kvantificirani podaci (>= 2 broja/postotka)";
+  const lVocab = "domenski financijski vokabular (>= 2 pojma)";
+  (t.hasBenchmarkLanguage ? c.satisfied : c.missing).push(lBenchmark);
+  (t.hasCausalLanguage ? c.satisfied : c.missing).push(lCausal);
+  (t.nNumericTokens >= 2 ? c.satisfied : c.missing).push(lQuant);
+  (t.nDistinctFinanceTerms >= 2 ? c.satisfied : c.missing).push(lVocab);
+  // causal explanation is the actual level-1-vs-2 differentiator per the BARS
+  // text (see the mandatory gate in scoreSkill2 below); weight it above the
+  // other three, which a level-1 text can satisfy on their own.
+  c.weights = { [lCausal]: 1.5, [lBenchmark]: 1.0, [lQuant]: 0.7, [lVocab]: 0.7 };
+  return c;
+}
+
+function checkSkill2Level3(t) {
+  const c = mkCheck(3);
+  const lStructure = "struktura: ključna poruka / sažetak / zaključak / preporuka";
+  const lRecommend = "akcijski orijentirana preporuka";
+  const lScenario = "scenarijska analiza / eksplicitna neizvjesnost";
+  const lConclNum = "kvantificirana implikacija u istom odlomku kao zaključak/preporuka";
+  const lContrast = "eksplicitno razlikuje simptom od uzroka";
+  const lVocabDense = "veća gustoća financijskog vokabulara (>= 4 pojma)";
+  const lQuantImpact = "eksplicitno kvantificiran financijski učinak (broj uz EBITDA/maržu/prihod...)";
+  (t.hasStructureMarkers ? c.satisfied : c.missing).push(lStructure);
+  (t.hasRecommendationLanguage ? c.satisfied : c.missing).push(lRecommend);
+  (t.hasScenarioLanguage ? c.satisfied : c.missing).push(lScenario);
+  (t.conclusionParagraphHasNumber ? c.satisfied : c.missing).push(lConclNum);
+  (t.hasContrastPattern ? c.satisfied : c.missing).push(lContrast);
+  (t.nDistinctFinanceTerms >= 4 ? c.satisfied : c.missing).push(lVocabDense);
+  (t.hasQuantifiedFinancialImpact ? c.satisfied : c.missing).push(lQuantImpact);
+  // distinguishing symptom from cause is literally what the BARS text names as
+  // this level's defining behaviour; structure and an actionable recommendation
+  // are close behind. Vocabulary density alone is the weakest signal here.
+  c.weights = {
+    [lContrast]: 1.5, [lStructure]: 1.2, [lRecommend]: 1.2,
+    [lScenario]: 1.0, [lConclNum]: 1.0, [lQuantImpact]: 1.0, [lVocabDense]: 0.6,
+  };
+  return c;
+}
+
+function checkSkill2Level4(t) {
+  const c = mkCheck(4);
+  const lSensitivity = "osjetljivosna analiza / prag na kojem se zaključak mijenja";
+  const lAudience = "komunikacija prilagođena >= 2 različite publike (uprava/CFO/investitori/operativni tim)";
+  const lDataQuality = "eksplicitno priznaje ograničenja kvalitete podataka";
+  const lContext = "integrira strateški/operativni/tržišni kontekst uz financijsku analizu";
+  (t.hasSensitivityLanguage ? c.satisfied : c.missing).push(lSensitivity);
+  (t.nDistinctAudienceKeywords >= 2 ? c.satisfied : c.missing).push(lAudience);
+  (t.hasDataQualityLanguage ? c.satisfied : c.missing).push(lDataQuality);
+  (t.hasStrategicContextLanguage ? c.satisfied : c.missing).push(lContext);
+  // sensitivity analysis and naming data-quality limitations are the two
+  // behaviours the BARS text calls out explicitly for level 4.
+  c.weights = { [lSensitivity]: 1.3, [lDataQuality]: 1.2, [lAudience]: 1.0, [lContext]: 1.0 };
+  return c;
+}
+
+const SKILL2_LEVEL2_RATIO = 0.5;
+
+function scoreSkill2(t) {
+  const checks = { 2: checkSkill2Level2(t), 3: checkSkill2Level3(t), 4: checkSkill2Level4(t) };
+  // Level 2 needs a mandatory causal-language gate on top of the ratio -- see
+  // the matching comment in bars_scoring.py (_SKILL2_LEVEL2_RATIO): the BARS
+  // document's own Level-1 example already has numbers and finance vocab, so
+  // those two checks alone can't be what promotes a text to Level 2.
+  let level = 1;
+  if (t.hasCausalLanguage && checkScore(checks[2]) >= SKILL2_LEVEL2_RATIO) {
+    level = 2;
+    if (checkScore(checks[3]) >= PASS_THRESHOLD[3]) {
+      level = 3;
+      if (checkScore(checks[4]) >= PASS_THRESHOLD[4]) level = 4;
+    }
+  }
+  const nextLevel = level + 1;
+  const gap = checks[nextLevel] ? checks[nextLevel].missing.slice() : [];
+  return {
+    skill: "Vještina 2: Analitička interpretacija i komunikacija financijskih nalaza",
+    level,
+    levelName: SKILL2_LEVEL_NAMES[level],
+    checks,
+    gapToNextLevel: gap,
+  };
+}
+
+/* ============================== esco_mapping.py, ported ============================== */
+/* Labels are verbatim from the BARS document header. No ESCO concept URIs:
+   ec.europa.eu and esco.ec.europa.eu are blocked by this environment's
+   network egress, so real IDs couldn't be verified -- see esco_mapping.py. */
+
+const ESCO_LABELS = {
+  use_spreadsheet_software: ["use spreadsheet software", "korištenje softvera za proračunske tablice"],
+  analyse_financial_data: ["analyse financial data", "analiza financijskih podataka"],
+  develop_financial_models: ["develop financial models", "razvoj financijskih modela"],
+  manage_data_content: ["manage data, information and digital content", "upravljanje podacima, informacijama i digitalnim sadržajem"],
+  communicate_findings: ["communicate findings to stakeholders", "komunikacija nalaza dionicima"],
+};
+const REL_NONE = "nema dokaza", REL_PARTIAL = "djelomična", REL_STRONG = "jaka";
+
+function escoMatch(key, relevance, evidence) {
+  const [labelEn, labelHr] = ESCO_LABELS[key];
+  return { key, labelEn, labelHr, relevance, evidence };
+}
+
+function escoFromSkill1(indicators, result) {
+  const s = indicators.structural, f = indicators.formula, level = result.level;
+  const matches = [];
+
+  matches.push(escoMatch("use_spreadsheet_software", level >= 2 ? REL_STRONG : REL_PARTIAL, [`BARS razina ${level} za '${result.skill}'`]));
+
+  matches.push(escoMatch(
+    "develop_financial_models",
+    level >= 3 ? REL_STRONG : level === 2 ? REL_PARTIAL : REL_NONE,
+    [`BARS razina ${level}: ${result.levelName}`]
+  ));
+
+  const mgmtEvidence = [];
+  if (s.nNamedRanges > 0 || s.nStructuredTables > 0) mgmtEvidence.push(`imenovani rasponi/tablice korišteni (${s.nNamedRanges} raspona, ${s.nStructuredTables} tablica)`);
+  if (s.hasReadmeSheet) mgmtEvidence.push("dokumentacijski list (README) prisutan");
+  if (s.hasInputSheet && s.hasCalcSheet && s.hasOutputSheet) mgmtEvidence.push("podaci organizirani u odvojene input/calc/output module");
+  matches.push(escoMatch("manage_data_content", mgmtEvidence.length >= 2 ? REL_STRONG : mgmtEvidence.length ? REL_PARTIAL : REL_NONE, mgmtEvidence));
+
+  const analyseEvidence = [];
+  if (f.usesAdvanced || (f.usesLookup && f.usesConditional)) analyseEvidence.push("napredna analitička logika u formulama (lookup/uvjetne/SUMIFS...)");
+  if (s.hardcodedRatio < 0.3) analyseEvidence.push(`nizak udio ručno unesenih brojeva (${fmtPct(s.hardcodedRatio)})`);
+  matches.push(escoMatch(
+    "analyse_financial_data",
+    level >= 3 ? REL_STRONG : analyseEvidence.length ? REL_PARTIAL : REL_NONE,
+    analyseEvidence.length ? analyseEvidence : [`BARS razina ${level} za '${result.skill}'`]
+  ));
+
+  return matches;
+}
+
+function escoFromSkill2(indicators, result) {
+  const level = result.level;
+  const matches = [];
+  matches.push(escoMatch(
+    "communicate_findings",
+    level >= 3 ? REL_STRONG : level === 2 ? REL_PARTIAL : REL_NONE,
+    [`BARS razina ${level}: ${result.levelName}`]
+  ));
+
+  const analyseEvidence = [];
+  if (indicators.nDistinctFinanceTerms >= 4) analyseEvidence.push(`gusta domenska terminologija (${indicators.nDistinctFinanceTerms} pojmova)`);
+  if (indicators.hasCausalLanguage && indicators.hasContrastPattern) analyseEvidence.push("razlikuje simptom od uzroka uz kvantificiranu implikaciju");
+  matches.push(escoMatch(
+    "analyse_financial_data",
+    level >= 3 ? REL_STRONG : analyseEvidence.length ? REL_PARTIAL : REL_NONE,
+    analyseEvidence.length ? analyseEvidence : [`BARS razina ${level} za '${result.skill}'`]
+  ));
+
+  return matches;
+}
+
+function mergeEsco(matches) {
+  const order = { [REL_NONE]: 0, [REL_PARTIAL]: 1, [REL_STRONG]: 2 };
+  const byKey = new Map();
+  for (const m of matches) {
+    if (!byKey.has(m.key)) { byKey.set(m.key, { ...m, evidence: [...m.evidence] }); continue; }
+    const existing = byKey.get(m.key);
+    if (order[m.relevance] > order[existing.relevance]) existing.relevance = m.relevance;
+    for (const e of m.evidence) if (!existing.evidence.includes(e)) existing.evidence.push(e);
+  }
+  return Object.keys(ESCO_LABELS).filter((k) => byKey.has(k)).map((k) => byKey.get(k));
+}
+
+function mapToEsco(skill1Data, skill2Data) {
+  let matches = [];
+  if (skill1Data) matches = matches.concat(escoFromSkill1(skill1Data.indicators, skill1Data.result));
+  if (skill2Data) matches = matches.concat(escoFromSkill2(skill2Data.indicators, skill2Data.result));
+  const present = new Set(matches.map((m) => m.key));
+  for (const key of Object.keys(ESCO_LABELS)) if (!present.has(key)) matches.push(escoMatch(key, REL_NONE, []));
+  return mergeEsco(matches);
+}
+
+/* ============================== docx_text.py, ported ============================== */
+
+async function extractDocxText(buffer) {
+  const zip = await openZip(buffer);
+  if (!zip.has("word/document.xml")) throw new Error("Datoteka nema word/document.xml — nije standardni .docx paket.");
+  const xml = await zip.readText("word/document.xml");
+  const paragraphs = [];
+  for (const paraXml of xml.split("</w:p>")) {
+    const runs = [...paraXml.matchAll(/<w:t[^>]*>([\s\S]*?)<\/w:t>/g)].map((m) => m[1]);
+    const text = runs.join("").trim();
+    if (text) paragraphs.push(text);
+  }
+  return paragraphs.join("\n\n");
+}
+
+/* ============================== certificate PDF (no libraries) ==============================
+   Hand-rolled, minimal PDF writer: base-14 Helvetica/Helvetica-Bold (no font
+   embedding needed), single-byte WinAnsiEncoding content streams, auto
+   pagination. Croatian č/ć/đ have no WinAnsi code point, so they're
+   ASCII-transliterated for this PDF only (the on-screen HTML keeps full
+   Unicode); a handful of "smart" punctuation marks (em/en dash, curly
+   quotes, bullet, ellipsis) map to their real WinAnsi byte instead of being
+   lost. Structure validated with poppler (pdfinfo/pdftoppm) before this
+   went into the page — see /merific/demo/ in the repo history. */
+
+const PDF_WINANSI_MAP = { "—": 0x97, "–": 0x96, "‘": 0x91, "’": 0x92, "“": 0x93, "”": 0x94, "•": 0x95, "…": 0x85, "·": 0xb7 };
+const PDF_CROATIAN_TRANSLITERATE = { "č": "c", "Č": "C", "ć": "c", "Ć": "C", "š": "s", "Š": "S", "ž": "z", "Ž": "Z", "đ": "dj", "Đ": "Dj" };
+
+function pdfEncodeBytes(s) {
+  const bytes = [];
+  for (const ch of s) {
+    if (PDF_CROATIAN_TRANSLITERATE[ch]) {
+      for (const c2 of PDF_CROATIAN_TRANSLITERATE[ch]) bytes.push(c2.charCodeAt(0));
+      continue;
+    }
+    const code = ch.codePointAt(0);
+    if (code < 128) { bytes.push(code); continue; }
+    if (PDF_WINANSI_MAP[ch] !== undefined) { bytes.push(PDF_WINANSI_MAP[ch]); continue; }
+    bytes.push(0x3f); // '?' -- unmapped glyph
+  }
+  return bytes;
+}
+
+function pdfPushAscii(arr, str) {
+  for (let i = 0; i < str.length; i++) arr.push(str.charCodeAt(i));
+}
+
+function pdfEscapedBytes(s) {
+  const out = [];
+  for (const b of pdfEncodeBytes(s)) {
+    if (b === 0x5c || b === 0x28 || b === 0x29) out.push(0x5c);
+    out.push(b);
+  }
+  return out;
+}
+
+const _pdfMeasureCanvas = document.createElement("canvas");
+const _pdfMeasureCtx = _pdfMeasureCanvas.getContext("2d");
+const PDF_PX_PER_PT = 96 / 72;
+function pdfTextWidthPts(text, sizePt, bold) {
+  _pdfMeasureCtx.font = `${bold ? "bold " : ""}${sizePt}pt Helvetica, Arial, sans-serif`;
+  return _pdfMeasureCtx.measureText(text).width / PDF_PX_PER_PT;
+}
+function pdfWrapText(text, size, bold, maxWidth) {
+  const words = text.split(/\s+/).filter(Boolean);
+  const lines = [];
+  let current = "";
+  for (const w of words) {
+    const candidate = current ? current + " " + w : w;
+    if (current && pdfTextWidthPts(candidate, size, bold) > maxWidth) {
+      lines.push(current);
+      current = w;
+    } else {
+      current = candidate;
+    }
+  }
+  if (current) lines.push(current);
+  return lines.length ? lines : [""];
+}
+
+const PDF_COLORS = {
+  blue: [0.184, 0.373, 0.878], // brand blue / mark gradient start, #2f5fe0
+  purple: [0.486, 0.247, 0.878], // mark gradient mid, #7c3fe0
+  pink: [0.902, 0.227, 0.549], // mark gradient end, #e63a8c
+  green: [0.122, 0.478, 0.298], // --green
+  amber: [0.651, 0.396, 0.047], // --amber
+  amberSoft: [0.961, 0.914, 0.839], // --amber-soft
+  grey: [0.827, 0.855, 0.808], // --rule
+  ink: [0.086, 0.129, 0.102], // --ink
+  inkSoft: [0.337, 0.388, 0.302], // --ink-soft
+  inkFaint: [0.486, 0.533, 0.455], // --ink-faint
+  white: [1, 1, 1],
+};
+
+// same gradient mark as the inline SVG in the page header, built from a 0..200
+// (y-up) local box: a ring + two crossing bezier arms (both pattern-stroked
+// with the brand gradient), 3 flat-color badge circles, and white glyphs.
+function pdfQuadToCubic(sx, sy, qx, qy, ex, ey) {
+  return {
+    c1x: sx + (2 / 3) * (qx - sx), c1y: sy + (2 / 3) * (qy - sy),
+    c2x: ex + (2 / 3) * (qx - ex), c2y: ey + (2 / 3) * (qy - ey),
+    ex, ey,
+  };
+}
+function pdfCircleBezierOps(cx, cy, r) {
+  const k = r * 0.5523;
+  return [
+    { type: "m", x: cx + r, y: cy },
+    { type: "c", x1: cx + r, y1: cy + k, x2: cx + k, y2: cy + r, x: cx, y: cy + r },
+    { type: "c", x1: cx - k, y1: cy + r, x2: cx - r, y2: cy + k, x: cx - r, y: cy },
+    { type: "c", x1: cx - r, y1: cy - k, x2: cx - k, y2: cy - r, x: cx, y: cy - r },
+    { type: "c", x1: cx + k, y1: cy - r, x2: cx + r, y2: cy - k, x: cx + r, y: cy },
+  ];
+}
+function pdfRoundedRectPathOps(x, y, w, h, r) {
+  const k = r * 0.5523;
+  return [
+    `${(x + r).toFixed(2)} ${y.toFixed(2)} m`,
+    `${(x + w - r).toFixed(2)} ${y.toFixed(2)} l`,
+    `${(x + w - r + k).toFixed(2)} ${y.toFixed(2)} ${(x + w).toFixed(2)} ${(y + r - k).toFixed(2)} ${(x + w).toFixed(2)} ${(y + r).toFixed(2)} c`,
+    `${(x + w).toFixed(2)} ${(y + h - r).toFixed(2)} l`,
+    `${(x + w).toFixed(2)} ${(y + h - r + k).toFixed(2)} ${(x + w - r + k).toFixed(2)} ${(y + h).toFixed(2)} ${(x + w - r).toFixed(2)} ${(y + h).toFixed(2)} c`,
+    `${(x + r).toFixed(2)} ${(y + h).toFixed(2)} l`,
+    `${(x + r - k).toFixed(2)} ${(y + h).toFixed(2)} ${x.toFixed(2)} ${(y + h - r + k).toFixed(2)} ${x.toFixed(2)} ${(y + h - r).toFixed(2)} c`,
+    `${x.toFixed(2)} ${(y + r).toFixed(2)} l`,
+    `${x.toFixed(2)} ${(y + r - k).toFixed(2)} ${(x + r - k).toFixed(2)} ${y.toFixed(2)} ${(x + r).toFixed(2)} ${y.toFixed(2)} c`,
+    "h",
+  ];
+}
+
+class PdfDoc {
+  constructor() {
+    this.pageWidth = 595; // A4, points
+    this.pageHeight = 842;
+    this.frameOuter = 28;
+    this.frameInner = 34;
+    this.marginLeft = 62;
+    this.marginRight = 62;
+    this.marginTop = 730;
+    this.marginBottom = 74;
+    this.pages = [[]];
+    this.cursorY = this.marginTop;
+    this._gradMarks = [];
+  }
+  _cur() { return this.pages[this.pages.length - 1]; }
+  _ensureSpace(h) {
+    if (this.cursorY - h < this.marginBottom) {
+      this.pages.push([]);
+      this.cursorY = this.marginTop;
+    }
+  }
+  addRect(x, y, w, h, color) { this._cur().push({ type: "rect", x, y, w, h, color }); }
+  addRectOutline(x, y, w, h, color, lineWidth) { this._cur().push({ type: "rectOutline", x, y, w, h, color, lineWidth }); }
+  addGradientMark(x0, y0, sizePt) {
+    const scale = sizePt / 200;
+    const P = (lx, ly) => ({ x: x0 + lx * scale, y: y0 + (200 - ly) * scale });
+    const gradIndex = this._gradMarks.length;
+    this._gradMarks.push({ x0, x1: x0 + sizePt, y: y0 + sizePt / 2 });
+
+    const toPagePath = (localOps) => localOps.map((op) =>
+      op.type === "m" ? { type: "m", ...P(op.x, op.y) } : { type: "c", c1: P(op.x1, op.y1), c2: P(op.x2, op.y2), end: P(op.x, op.y) }
+    );
+
+    this._cur().push({ type: "gradStroke", gradIndex, ops: toPagePath(pdfCircleBezierOps(100, 100, 86)), lineWidth: 9 * scale, round: false });
+
+    const q1 = pdfQuadToCubic(48, 66, 55, 100, 100, 118);
+    const q2 = pdfQuadToCubic(100, 118, 145, 100, 152, 66);
+    this._cur().push({
+      type: "gradStroke", gradIndex, lineWidth: 15 * scale, round: true,
+      ops: [
+        { type: "m", ...P(48, 66) },
+        { type: "c", c1: P(q1.c1x, q1.c1y), c2: P(q1.c2x, q1.c2y), end: P(q1.ex, q1.ey) },
+        { type: "c", c1: P(q2.c1x, q2.c1y), c2: P(q2.c2x, q2.c2y), end: P(q2.ex, q2.ey) },
+      ],
+    });
+
+    const q3 = pdfQuadToCubic(58, 148, 68, 122, 100, 118);
+    const q4 = pdfQuadToCubic(100, 118, 132, 122, 142, 148);
+    this._cur().push({
+      type: "gradStroke", gradIndex, lineWidth: 15 * scale, round: true,
+      ops: [
+        { type: "m", ...P(58, 148) },
+        { type: "c", c1: P(q3.c1x, q3.c1y), c2: P(q3.c2x, q3.c2y), end: P(q3.ex, q3.ey) },
+        { type: "c", c1: P(q4.c1x, q4.c1y), c2: P(q4.c2x, q4.c2y), end: P(q4.ex, q4.ey) },
+      ],
+    });
+
+    const badge = (cx, cy, r, color) => {
+      this._cur().push({ type: "circleFill", ops: toPagePath(pdfCircleBezierOps(cx, cy, r)), color });
+    };
+    badge(100, 22, 17, PDF_COLORS.purple);
+    badge(30, 146, 17, PDF_COLORS.blue);
+    badge(170, 146, 17, PDF_COLORS.pink);
+
+    const strokeLine = (pts, lw) => {
+      this._cur().push({ type: "strokeLine", points: pts.map(([lx, ly]) => P(lx, ly)), color: PDF_COLORS.white, lineWidth: lw });
+    };
+    strokeLine([[92, 17], [108, 17]], 2.6 * scale);
+    strokeLine([[92, 22], [108, 22]], 2.6 * scale);
+    strokeLine([[92, 27], [103, 27]], 2.6 * scale);
+    strokeLine([[27, 140], [22, 146], [27, 152]], 2.6 * scale);
+    strokeLine([[34, 140], [39, 146], [34, 152]], 2.6 * scale);
+
+    const rectFromLocal = (lx, ly, lw, lh) => {
+      const p1 = P(lx, ly + lh), p2 = P(lx + lw, ly);
+      return { x: Math.min(p1.x, p2.x), y: Math.min(p1.y, p2.y), w: Math.abs(p2.x - p1.x), h: Math.abs(p2.y - p1.y) };
+    };
+    for (const [lx, ly, lw, lh] of [[163, 148, 3.4, 8], [169, 143, 3.4, 13], [175, 139, 3.4, 17]]) {
+      const r = rectFromLocal(lx, ly, lw, lh);
+      this.addRect(r.x, r.y, r.w, r.h, PDF_COLORS.white);
+    }
+  }
+  addTextAt(text, x, y, size, bold, color) { this._cur().push({ type: "text", text, x, y, size, bold: !!bold, color }); }
+  addTextCentered(text, cx, y, size, bold, color, letterSpacing) {
+    this._cur().push({ type: "textc", text, cx, y, size, bold: !!bold, color, letterSpacing: letterSpacing || 0 });
+  }
+  addText(text, size, bold, indent, color) {
+    indent = indent || 0;
+    const lineHeight = size * 1.4;
+    const maxWidth = this.pageWidth - this.marginLeft - this.marginRight - indent;
+    for (const line of pdfWrapText(text, size, !!bold, maxWidth)) {
+      this._ensureSpace(lineHeight);
+      this._cur().push({ type: "text", text: line, x: this.marginLeft + indent, y: this.cursorY, size, bold: !!bold, color });
+      this.cursorY -= lineHeight;
+    }
+  }
+  addTextBlockCentered(text, size, bold, color, maxWidth) {
+    const lineHeight = size * 1.4;
+    for (const line of pdfWrapText(text, size, !!bold, maxWidth)) {
+      this._ensureSpace(lineHeight);
+      this._cur().push({ type: "textc", text: line, cx: this.pageWidth / 2, y: this.cursorY, size, bold: !!bold, color });
+      this.cursorY -= lineHeight;
+    }
+  }
+  addSpacer(h) {
+    this.cursorY -= h;
+    if (this.cursorY < this.marginBottom) {
+      this.pages.push([]);
+      this.cursorY = this.marginTop;
+    }
+  }
+  addFrameAndFooterToAllPages(footerText) {
+    for (const page of this.pages) {
+      page.unshift(
+        { type: "rectOutline", x: this.frameOuter, y: this.frameOuter, w: this.pageWidth - 2 * this.frameOuter, h: this.pageHeight - 2 * this.frameOuter, color: PDF_COLORS.blue, lineWidth: 1.3 },
+        { type: "rectOutline", x: this.frameInner, y: this.frameInner, w: this.pageWidth - 2 * this.frameInner, h: this.pageHeight - 2 * this.frameInner, color: PDF_COLORS.grey, lineWidth: 0.6 },
+        { type: "rect", x: this.frameInner + 6, y: 52, w: this.pageWidth - 2 * (this.frameInner + 6), h: 0.6, color: PDF_COLORS.grey },
+        { type: "textc", text: footerText, cx: this.pageWidth / 2, y: 40, size: 8.5, bold: false, color: PDF_COLORS.inkFaint }
+      );
+    }
+  }
+  build() {
+    const nPages = this.pages.length;
+    const objects = [];
+    const pageObjNums = [], contentObjNums = [];
+    for (let i = 0; i < nPages; i++) { pageObjNums.push(3 + i * 2); contentObjNums.push(4 + i * 2); }
+    const fontF1 = 3 + nPages * 2, fontF2 = fontF1 + 1;
+
+    // gradient mark objects (2 exponential functions + 1 stitching function +
+    // 1 axial shading + 1 pattern) appended after the fonts, one set per mark
+    let nextObj = fontF2 + 1;
+    for (const g of this._gradMarks) {
+      g.fn0 = nextObj++; g.fn1 = nextObj++; g.fnStitch = nextObj++; g.shading = nextObj++; g.pattern = nextObj++;
+    }
+    const patternResources = this._gradMarks.map((g, i) => `/P${i} ${g.pattern} 0 R`).join(" ");
+
+    objects[1] = { ascii: `<< /Type /Catalog /Pages 2 0 R >>` };
+    objects[2] = { ascii: `<< /Type /Pages /Kids [${pageObjNums.map((n) => n + " 0 R").join(" ")}] /Count ${nPages} >>` };
+
+    for (let i = 0; i < nPages; i++) {
+      objects[pageObjNums[i]] = {
+        ascii: `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${this.pageWidth} ${this.pageHeight}] /Resources << /Font << /F1 ${fontF1} 0 R /F2 ${fontF2} 0 R >>${patternResources ? ` /Pattern << ${patternResources} >>` : ""} >> /Contents ${contentObjNums[i]} 0 R >>`,
+      };
+      const opBytes = [];
+      for (const item of this.pages[i]) {
+        if (item.type === "rect") {
+          pdfPushAscii(opBytes, `${item.color[0].toFixed(3)} ${item.color[1].toFixed(3)} ${item.color[2].toFixed(3)} rg\n`);
+          pdfPushAscii(opBytes, `${item.x.toFixed(2)} ${item.y.toFixed(2)} ${item.w.toFixed(2)} ${item.h.toFixed(2)} re f\n`);
+        } else if (item.type === "rectOutline") {
+          pdfPushAscii(opBytes, `${item.color[0].toFixed(3)} ${item.color[1].toFixed(3)} ${item.color[2].toFixed(3)} RG\n`);
+          pdfPushAscii(opBytes, `${item.lineWidth} w\n`);
+          pdfPushAscii(opBytes, `${item.x.toFixed(2)} ${item.y.toFixed(2)} ${item.w.toFixed(2)} ${item.h.toFixed(2)} re S\n`);
+        } else if (item.type === "gradStroke") {
+          pdfPushAscii(opBytes, `/Pattern CS\n/P${item.gradIndex} SCN\n`);
+          pdfPushAscii(opBytes, `${item.lineWidth.toFixed(2)} w\n`);
+          if (item.round) pdfPushAscii(opBytes, "1 J 1 j\n");
+          for (const op of item.ops) {
+            if (op.type === "m") pdfPushAscii(opBytes, `${op.x.toFixed(2)} ${op.y.toFixed(2)} m\n`);
+            else pdfPushAscii(opBytes, `${op.c1.x.toFixed(2)} ${op.c1.y.toFixed(2)} ${op.c2.x.toFixed(2)} ${op.c2.y.toFixed(2)} ${op.end.x.toFixed(2)} ${op.end.y.toFixed(2)} c\n`);
+          }
+          pdfPushAscii(opBytes, "S\n");
+          if (item.round) pdfPushAscii(opBytes, "0 J 0 j\n");
+        } else if (item.type === "circleFill") {
+          pdfPushAscii(opBytes, `${item.color[0].toFixed(3)} ${item.color[1].toFixed(3)} ${item.color[2].toFixed(3)} rg\n`);
+          for (const op of item.ops) {
+            if (op.type === "m") pdfPushAscii(opBytes, `${op.x.toFixed(2)} ${op.y.toFixed(2)} m\n`);
+            else pdfPushAscii(opBytes, `${op.c1.x.toFixed(2)} ${op.c1.y.toFixed(2)} ${op.c2.x.toFixed(2)} ${op.c2.y.toFixed(2)} ${op.end.x.toFixed(2)} ${op.end.y.toFixed(2)} c\n`);
+          }
+          pdfPushAscii(opBytes, "h f\n");
+        } else if (item.type === "strokeLine") {
+          pdfPushAscii(opBytes, `${item.color[0].toFixed(3)} ${item.color[1].toFixed(3)} ${item.color[2].toFixed(3)} RG\n`);
+          pdfPushAscii(opBytes, `${item.lineWidth.toFixed(2)} w\n1 J 1 j\n`);
+          item.points.forEach((p, k) => pdfPushAscii(opBytes, `${p.x.toFixed(2)} ${p.y.toFixed(2)} ${k === 0 ? "m" : "l"}\n`));
+          pdfPushAscii(opBytes, "S\n0 J 0 j\n");
+        } else if (item.type === "text") {
+          const c = item.color || PDF_COLORS.ink;
+          pdfPushAscii(opBytes, `${c[0].toFixed(3)} ${c[1].toFixed(3)} ${c[2].toFixed(3)} rg\n`);
+          pdfPushAscii(opBytes, "BT\n");
+          pdfPushAscii(opBytes, `/${item.bold ? "F2" : "F1"} ${item.size} Tf\n`);
+          pdfPushAscii(opBytes, `0 Tc\n`); // Tc/Tw persist across BT/ET (graphics state, not text-object
+          pdfPushAscii(opBytes, `1 0 0 1 ${item.x.toFixed(2)} ${item.y.toFixed(2)} Tm\n`); // state) -- always reset
+          pdfPushAscii(opBytes, "(");
+          opBytes.push(...pdfEscapedBytes(item.text));
+          pdfPushAscii(opBytes, ") Tj\nET\n");
+        } else if (item.type === "textc") {
+          const c = item.color || PDF_COLORS.ink;
+          const w = pdfTextWidthPts(item.text, item.size, item.bold) + (item.letterSpacing || 0) * Math.max(0, item.text.length - 1);
+          const x = item.cx - w / 2;
+          pdfPushAscii(opBytes, `${c[0].toFixed(3)} ${c[1].toFixed(3)} ${c[2].toFixed(3)} rg\n`);
+          pdfPushAscii(opBytes, "BT\n");
+          pdfPushAscii(opBytes, `/${item.bold ? "F2" : "F1"} ${item.size} Tf\n`);
+          pdfPushAscii(opBytes, `${item.letterSpacing || 0} Tc\n`); // always set explicitly, never inherited
+          pdfPushAscii(opBytes, `1 0 0 1 ${x.toFixed(2)} ${item.y.toFixed(2)} Tm\n`);
+          pdfPushAscii(opBytes, "(");
+          opBytes.push(...pdfEscapedBytes(item.text));
+          pdfPushAscii(opBytes, ") Tj\nET\n");
+        }
+      }
+      objects[contentObjNums[i]] = { bytesWithStream: opBytes };
+    }
+
+    objects[fontF1] = { ascii: `<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>` };
+    objects[fontF2] = { ascii: `<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>` };
+
+    for (const g of this._gradMarks) {
+      objects[g.fn0] = { ascii: `<< /FunctionType 2 /Domain [0 1] /C0 [${PDF_COLORS.blue.join(" ")}] /C1 [${PDF_COLORS.purple.join(" ")}] /N 1 >>` };
+      objects[g.fn1] = { ascii: `<< /FunctionType 2 /Domain [0 1] /C0 [${PDF_COLORS.purple.join(" ")}] /C1 [${PDF_COLORS.pink.join(" ")}] /N 1 >>` };
+      objects[g.fnStitch] = { ascii: `<< /FunctionType 3 /Domain [0 1] /Functions [${g.fn0} 0 R ${g.fn1} 0 R] /Bounds [0.5] /Encode [0 1 0 1] >>` };
+      objects[g.shading] = { ascii: `<< /ShadingType 2 /ColorSpace /DeviceRGB /Coords [${g.x0.toFixed(2)} ${g.y.toFixed(2)} ${g.x1.toFixed(2)} ${g.y.toFixed(2)}] /Function ${g.fnStitch} 0 R /Extend [true true] >>` };
+      objects[g.pattern] = { ascii: `<< /Type /Pattern /PatternType 2 /Shading ${g.shading} 0 R >>` };
+    }
+
+    const totalObjects = this._gradMarks.length ? this._gradMarks[this._gradMarks.length - 1].pattern : fontF2;
+    const out = [];
+    pdfPushAscii(out, "%PDF-1.4\n");
+    out.push(0x25, 0xe2, 0xe3, 0xcf, 0xd3, 0x0a);
+
+    const offsets = new Array(totalObjects + 1).fill(0);
+    for (let n = 1; n <= totalObjects; n++) {
+      offsets[n] = out.length;
+      pdfPushAscii(out, `${n} 0 obj\n`);
+      const obj = objects[n];
+      if (obj.ascii) {
+        pdfPushAscii(out, obj.ascii);
+      } else {
+        pdfPushAscii(out, `<< /Length ${obj.bytesWithStream.length} >>\nstream\n`);
+        out.push(...obj.bytesWithStream);
+        pdfPushAscii(out, "\nendstream");
+      }
+      pdfPushAscii(out, "\nendobj\n");
+    }
+
+    const xrefOffset = out.length;
+    pdfPushAscii(out, `xref\n0 ${totalObjects + 1}\n`);
+    pdfPushAscii(out, "0000000000 65535 f \n");
+    for (let n = 1; n <= totalObjects; n++) pdfPushAscii(out, `${String(offsets[n]).padStart(10, "0")} 00000 n \n`);
+    pdfPushAscii(out, `trailer\n<< /Size ${totalObjects + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`);
+
+    return Uint8Array.from(out);
+  }
+}
+
+function certificateNowStr() {
+  return new Date().toISOString().slice(0, 16).replace("T", " ");
+}
+
+function buildCertificatePdfBytes() {
+  const doc = new PdfDoc();
+  const cx = doc.pageWidth / 2;
+
+  doc.cursorY = doc.pageHeight - doc.frameInner - 34;
+  const markSize = 46;
+  doc.addGradientMark(cx - markSize / 2, doc.cursorY - markSize + 6, markSize);
+  doc.cursorY -= markSize + 8;
+
+  doc.addTextBlockCentered("MERIFIC", 24, true, PDF_COLORS.blue, 400);
+  doc.cursorY -= 2;
+  doc.addTextBlockCentered("Automatizirana samoprocjena kompetencija", 10.5, false, PDF_COLORS.inkSoft, 400);
+  doc.addSpacer(14);
+  doc.addRect(cx - 90, doc.cursorY, 180, 1, PDF_COLORS.grey);
+  doc.addSpacer(22);
+
+  doc.addTextCentered("POTVRDA O SAMOPROCJENI", cx, doc.cursorY, 15, true, PDF_COLORS.ink, 1.6);
+  doc.cursorY -= 26;
+
+  const discW = doc.pageWidth - 2 * (doc.frameInner + 22);
+  const discX = doc.frameInner + 22;
+  doc.addRect(discX, doc.cursorY - 50, discW, 50, PDF_COLORS.amberSoft);
+  doc.cursorY -= 12;
+  doc.addTextBlockCentered(
+    "Ovo NIJE službena kvalifikacija niti potvrda Europske komisije ili tijela povezanog s ESCO okvirom.",
+    9.5, true, PDF_COLORS.amber, discW - 24
+  );
+  doc.addTextBlockCentered(
+    "Rezultat automatiziranog PoC prototipa temeljenog na pravilima, bez ekspertskog panela i treniranog ML modela.",
+    9, false, PDF_COLORS.amber, discW - 24
+  );
+  doc.cursorY -= 46;
+  doc.addTextBlockCentered(`Generirano: ${certificateNowStr()}`, 8.5, false, PDF_COLORS.inkFaint, 400);
+  doc.addSpacer(20);
+
+  function sectionHeader(title) {
+    doc.addRect(doc.marginLeft, doc.cursorY - 4, 3, 16, PDF_COLORS.green);
+    doc.addText(title, 13, true, 12, PDF_COLORS.ink);
+    doc.cursorY -= 6;
+  }
+  function badgeLine(label, color) {
+    const w = 9 + label.length * 5.6;
+    doc.addRect(doc.marginLeft, doc.cursorY - 3, w, 14, color);
+    doc.addTextAt(label, doc.marginLeft + 5, doc.cursorY, 8.5, true, PDF_COLORS.white);
+    doc.cursorY -= 20;
+  }
+  const relColor = (rel) => (rel === REL_STRONG ? PDF_COLORS.green : rel === REL_PARTIAL ? PDF_COLORS.amber : PDF_COLORS.grey);
+
+  if (state.skill1) {
+    sectionHeader(state.skill1.result.skill);
+    badgeLine(`RAZINA ${state.skill1.result.level}`, PDF_COLORS.green);
+    doc.addText(state.skill1.result.levelName.split("—")[1].trim(), 10.5, false, 0, PDF_COLORS.inkSoft);
+    doc.addText(`Izvor: ${state.skill1.indicators.fileName}`, 9, false, 0, PDF_COLORS.inkFaint);
+    doc.addSpacer(16);
+  }
+  if (state.skill2) {
+    sectionHeader(state.skill2.result.skill);
+    badgeLine(`RAZINA ${state.skill2.result.level}`, PDF_COLORS.green);
+    doc.addText(state.skill2.result.levelName.split("—")[1].trim(), 10.5, false, 0, PDF_COLORS.inkSoft);
+    doc.addText(`Izvor: ${state.skill2.indicators.sourceName}`, 9, false, 0, PDF_COLORS.inkFaint);
+    doc.addSpacer(18);
+  }
+
+  if (state.skill1 || state.skill2) {
+    sectionHeader("ESCO mapiranje");
+    doc.addText("Oznake su navedene po imenu (verbatim iz BARS dokumenta), ne po ESCO URI-ju.", 9, false, 0, PDF_COLORS.inkFaint);
+    doc.addSpacer(8);
+    for (const m of mapToEsco(state.skill1, state.skill2)) {
+      badgeLine(m.relevance.toUpperCase(), relColor(m.relevance));
+      doc.addText(m.labelEn, 10, true, 0, PDF_COLORS.ink);
+      doc.addText(m.labelHr, 9, false, 0, PDF_COLORS.inkFaint);
+      for (const e of m.evidence) doc.addText(`– ${e}`, 8.5, false, 14, PDF_COLORS.inkSoft);
+      doc.addSpacer(8);
+    }
+  }
+
+  doc.addFrameAndFooterToAllPages("Merific · pravilima utemeljen PoC prototip · nije priznata kvalifikacija");
+  return doc.build();
+}
+
+function buildCertificateTextFallback() {
+  const out = ["MERIFIC — Sažetak samoprocjene (PoC prototip)", ""];
+  out.push(
+    "Ovo NIJE službena kvalifikacija niti potvrda Europske komisije ili bilo kojeg tijela povezanog s ESCO okvirom. " +
+      "Rezultat automatiziranog PoC prototipa temeljenog na pravilima, bez ekspertskog panela i bez treniranog ML modela."
+  );
+  out.push(`Generirano: ${certificateNowStr()}`, "");
+
+  if (state.skill1) {
+    out.push(state.skill1.result.skill, `BARS ${state.skill1.result.levelName}`, `Izvor: ${state.skill1.indicators.fileName}`, "");
+  }
+  if (state.skill2) {
+    out.push(state.skill2.result.skill, `BARS ${state.skill2.result.levelName}`, `Izvor: ${state.skill2.indicators.sourceName}`, "");
+  }
+  if (state.skill1 || state.skill2) {
+    out.push("ESCO mapiranje (naziv, ne ESCO URI):");
+    for (const m of mapToEsco(state.skill1, state.skill2)) {
+      out.push(`[${m.relevance}] ${m.labelEn}  (${m.labelHr})`);
+      for (const e of m.evidence) out.push(`    – ${e}`);
+    }
+  }
+  return out.join("\n");
+}
+
+/* --- offering the file: claude.ai downloads capability, else a plain blob link
+   (the blob link is inert inside the sandboxed claude.ai artifact viewer, but
+   works normally when this file is opened directly/locally, per the README) --- */
+
+async function saveViaDownloadsCapability(filename, data) {
+  if (!(window.claude && typeof window.claude.use === "function")) return { supported: false };
+  let downloads = null;
+  try { downloads = await window.claude.use("downloads"); } catch { downloads = null; }
+  if (!downloads) return { supported: false };
+  try {
+    await downloads.save({ filename, data });
+    return { supported: true, ok: true };
+  } catch (err) {
+    return { supported: true, ok: false, error: err };
+  }
+}
+
+function saveViaBlobLink(filename, data, mime) {
+  try {
+    const blob = new Blob([data], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function downloadCertificate() {
+  const note = document.getElementById("downloadNote");
+  if (note) note.textContent = "";
+  const pdfBytes = buildCertificatePdfBytes();
+
+  const capResult = await saveViaDownloadsCapability("merific-sazetak.pdf", pdfBytes);
+  if (capResult.supported) {
+    if (capResult.ok) return;
+    if (capResult.error && capResult.error.code === "declined") return;
+    const txtResult = await saveViaDownloadsCapability("merific-sazetak.txt", buildCertificateTextFallback());
+    if (txtResult.ok || (txtResult.error && txtResult.error.code === "declined")) return;
+    if (note) note.textContent = "Preuzimanje nije uspjelo u ovom pregledu. Otvorite demo lokalno (izvan claude.ai) za preuzimanje.";
+    return;
+  }
+
+  if (!saveViaBlobLink("merific-sazetak.pdf", pdfBytes, "application/pdf")) {
+    if (note) note.textContent = "Preuzimanje nije uspjelo u ovom pregledniku.";
+  }
+}
+
+/* ============================== rendering ============================== */
+
+const fmtPct = (x) => (x * 100).toFixed(0) + "%";
+const fmtNum = (x, d = 2) => Number(x).toFixed(d);
+
+function indicatorCards(m) {
+  const s = m.structural, f = m.formula;
+  const flag = (b) => `<span class="${b ? "flag-yes" : "flag-no"}">${b ? "da" : "ne"}</span>`;
+  const cards = [
+    ["broj radnih listova", s.nSheets, ""],
+    ["imenovani rasponi", s.nNamedRanges, ""],
+    ["strukturirane tablice", s.nStructuredTables, ""],
+    ["cross-sheet reference", s.crossSheetRefCount, ""],
+    ["udio hardkodiranih vrijednosti", fmtPct(s.hardcodedRatio), ""],
+    ["konzistencija boja input/formula", fmtPct(s.colorConventionScore), ""],
+    ["broj formula", f.nFormulas, ""],
+    ["dosljednost obrazaca formula", fmtPct(f.patternConsistency), ""],
+    ["max dubina ugnježđivanja", f.maxNestingDepth, ""],
+    ["uvjetne / lookup funkcije", flag(f.usesConditional || f.usesLookup), "raw"],
+    ["napredne funkcije (SUMIFS, INDEX+MATCH...)", flag(f.usesAdvanced), "raw"],
+    ["LAMBDA / dinamički nizovi", flag(f.usesLambdaOrDynamic), "raw"],
+    ["Power Query", flag(f.hasPowerQuery), "raw"],
+    ["VBA / makro", flag(f.hasVba), "raw"],
+    ["scenarijski selektor", flag(s.hasScenarioSelector) + (s.hasScenarioSelector ? ` <span class="unit">(fanout ${s.scenarioSelectorFanout})</span>` : ""), "raw"],
+  ];
+  return cards
+    .map(([k, v, mode]) => `<div class="ind-card"><div class="k">${k}</div><div class="v">${mode === "raw" ? v : v}</div></div>`)
+    .join("");
+}
+
+function checkCard(title, check) {
+  const items = [
+    ...check.satisfied.map((t) => `<li class="yes"><span class="mark">✓</span><span class="txt">${t}</span></li>`),
+    ...check.missing.map((t) => `<li class="no"><span class="mark">·</span><span class="txt">${t}</span></li>`),
+  ].join("");
+  return `<div class="check-card">
+    <div class="check-head"><span class="title">${title}</span><span class="score mono">${fmtPct(checkScore(check))}</span></div>
+    <ul class="check-list">${items}</ul>
+  </div>`;
+}
+
+function ladderHTML(level, levelNames) {
+  let html = "";
+  for (let lvl = 4; lvl >= 1; lvl--) {
+    const reached = lvl <= level;
+    const current = lvl === level;
+    const cls = ["rung"];
+    if (reached) cls.push("reached");
+    if (current) cls.push("current");
+    const shortName = levelNames[lvl].split("—")[1].trim().split("(")[0].trim();
+    html += `<div class="${cls.join(" ")}"><span class="num mono">${lvl}</span><span class="name">${shortName}</span></div>`;
+  }
+  return html;
+}
+
+function indicatorCardsSkill2(t) {
+  const flag = (b) => `<span class="${b ? "flag-yes" : "flag-no"}">${b ? "da" : "ne"}</span>`;
+  const cards = [
+    ["broj riječi", t.nWords],
+    ["broj odlomaka", t.nParagraphs],
+    ["kvantificirani tokeni", t.nNumericTokens],
+    ["kvantificiran financijski učinak", flag(t.hasQuantifiedFinancialImpact)],
+    ["domenski financijski pojmovi", t.nDistinctFinanceTerms],
+    ["benchmark jezik", flag(t.hasBenchmarkLanguage)],
+    ["uzročni jezik", flag(t.hasCausalLanguage)],
+    ["simptom vs. uzrok", flag(t.hasContrastPattern)],
+    ["preporuka / akcija", flag(t.hasRecommendationLanguage)],
+    ["scenarij / neizvjesnost", flag(t.hasScenarioLanguage)],
+    ["strukturni markeri", flag(t.hasStructureMarkers)],
+    ["broj uz zaključak/preporuku", flag(t.conclusionParagraphHasNumber)],
+    ["osjetljivosni jezik", flag(t.hasSensitivityLanguage)],
+    ["broj publika (uprava/CFO/...)", t.nDistinctAudienceKeywords],
+    ["priznanje ograničenja podataka", flag(t.hasDataQualityLanguage)],
+    ["strateški/operativni kontekst", flag(t.hasStrategicContextLanguage)],
+  ];
+  return cards.map(([k, v]) => `<div class="ind-card"><div class="k">${k}</div><div class="v">${v}</div></div>`).join("");
+}
+
+function skillResultCardHTML(result, sourceLine, indicatorsHtml, levelNames) {
+  const gapSection =
+    result.level >= 4
+      ? `<div class="gap-box maxed"><h3>Dosegnuta je najviša operacionalizirana razina</h3><p>Materijal zadovoljava kriterije Razine 4 na sve provjerene indikatore.</p></div>`
+      : `<div class="gap-box"><h3>Za razinu ${result.level + 1} nedostaje</h3><ul>${result.gapToNextLevel.map((g) => `<li>${g}</li>`).join("")}</ul></div>`;
+
+  return `
+    <div class="result-head">
+      <div class="ladder">${ladderHTML(result.level, levelNames)}</div>
+      <div class="result-summary">
+        <div class="skill-label">${result.skill}</div>
+        <h2>${result.levelName}</h2>
+        <p class="level-desc">${sourceLine}</p>
+      </div>
+    </div>
+    <div class="indicator-grid">${indicatorsHtml}</div>
+    <div class="checks">
+      ${checkCard("Provjera za razinu 2", result.checks[2])}
+      ${checkCard("Provjera za razinu 3", result.checks[3])}
+      ${checkCard("Provjera za razinu 4", result.checks[4])}
+    </div>
+    ${gapSection}
+  `;
+}
+
+function skillPillsHTML() {
+  const pill = (analyzed, label) =>
+    `<span class="skill-pill ${analyzed ? "active" : ""}"><span class="dot"></span>${label}</span>`;
+  return `<div class="skill-pills">
+    ${pill(!!state.skill1, state.skill1 ? `Vještina 1 · Razina ${state.skill1.result.level}` : "Vještina 1 · nije analizirano")}
+    ${pill(!!state.skill2, state.skill2 ? `Vještina 2 · Razina ${state.skill2.result.level}` : "Vještina 2 · nije analizirano")}
+  </div>`;
+}
+
+function escoSectionHTML() {
+  if (!state.skill1 && !state.skill2) return "";
+  const matches = mapToEsco(state.skill1, state.skill2);
+  const relClass = { [REL_STRONG]: "jaka", [REL_PARTIAL]: "djelomicna", [REL_NONE]: "nema-dokaza" };
+  const cards = matches
+    .map((m) => {
+      const evidence = m.evidence.length ? `<ul>${m.evidence.map((e) => `<li>${e}</li>`).join("")}</ul>` : "";
+      return `<div class="esco-card">
+        <span class="esco-rel ${relClass[m.relevance]}">${m.relevance}</span>
+        <div class="esco-body"><span class="label-en">${m.labelEn}</span><span class="label-hr">${m.labelHr}</span>${evidence}</div>
+      </div>`;
+    })
+    .join("");
+  return `<div class="esco-section">
+    <h3>ESCO mapiranje</h3>
+    <p class="esco-hint">Kombinira dokaze iz obje analizirane vještine (ako su obje pokrenute u ovoj sesiji) na 5 ESCO oznaka koje BARS dokument već imenuje. Oznake su navedene po imenu, ne po ESCO URI-ju — vidi napomenu u <span class="mono">esco_mapping.py</span>.</p>
+    <div class="esco-grid">${cards}</div>
+  </div>`;
+}
+
+function paintResults() {
+  const panel = document.getElementById("resultsPanel");
+  let body = skillPillsHTML();
+  if (state.lastShown === "skill1" && state.skill1) {
+    body += skillResultCardHTML(
+      state.skill1.result,
+      `Datoteka: <span class="mono">${state.skill1.indicators.fileName}</span>`,
+      indicatorCards(state.skill1.indicators),
+      LEVEL_NAMES
+    );
+  } else if (state.lastShown === "skill2" && state.skill2) {
+    body += skillResultCardHTML(
+      state.skill2.result,
+      `Izvor: <span class="mono">${state.skill2.indicators.sourceName}</span>`,
+      indicatorCardsSkill2(state.skill2.indicators),
+      SKILL2_LEVEL_NAMES
+    );
+  }
+  body += escoSectionHTML();
+  if (state.skill1 || state.skill2) {
+    body += `<div class="download-row">
+      <button class="secondary-btn" id="downloadCertBtn">⬇ Preuzmi sažetak (PDF)</button>
+      <span class="download-note" id="downloadNote"></span>
+    </div>`;
+  }
+  panel.innerHTML = body;
+}
+
+function renderLoading(message) {
+  document.getElementById("resultsPanel").innerHTML = `<div class="loading"><span class="spinner"></span> ${message || "Analiziram…"}</div>`;
+}
+
+function renderError(message) {
+  document.getElementById("resultsPanel").innerHTML = `<div class="error-state"><strong>Analiza nije uspjela.</strong><br>${message}</div>`;
+}
+
+const state = { skill1: null, skill2: null, lastShown: null };
+
+async function runAnalysisSkill1(buffer, fileName) {
+  renderLoading("Analiziram model…");
+  try {
+    const indicators = await extractIndicators(buffer, fileName);
+    const result = scoreSkill1(indicators);
+    state.skill1 = { indicators, result };
+    state.lastShown = "skill1";
+    paintResults();
+  } catch (err) {
+    renderError(err && err.message ? err.message : String(err));
+  }
+}
+
+async function runAnalysisSkill2(text, sourceName) {
+  renderLoading("Analiziram tekst…");
+  try {
+    const indicators = extractTextIndicators(text, sourceName);
+    const result = scoreSkill2(indicators);
+    state.skill2 = { indicators, result };
+    state.lastShown = "skill2";
+    paintResults();
+  } catch (err) {
+    renderError(err && err.message ? err.message : String(err));
+  }
+}
+
+/* ============================== UI wiring ============================== */
+
+const dropzone = document.getElementById("dropzone");
+const fileInput = document.getElementById("fileInput");
+const fileMeta = document.getElementById("fileMeta");
+
+function humanSize(bytes) {
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+}
+
+async function handleFile(file) {
+  if (!file) return;
+  fileMeta.textContent = `${file.name} · ${humanSize(file.size)}`;
+  fileMeta.classList.add("show");
+  const buffer = await file.arrayBuffer();
+  await runAnalysisSkill1(buffer, file.name);
+}
+
+dropzone.addEventListener("click", () => fileInput.click());
+dropzone.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); } });
+fileInput.addEventListener("change", (e) => handleFile(e.target.files[0]));
+
+["dragenter", "dragover"].forEach((evt) =>
+  dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.add("drag"); })
+);
+["dragleave", "drop"].forEach((evt) =>
+  dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.remove("drag"); })
+);
+dropzone.addEventListener("drop", (e) => {
+  const file = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (file) handleFile(file);
+});
+
+function base64ToArrayBuffer(b64) {
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes.buffer;
+}
+
+document.getElementById("sampleButtons").addEventListener("click", (e) => {
+  const btn = e.target.closest(".sample-btn");
+  if (!btn) return;
+  const lvl = btn.getAttribute("data-level");
+  fileMeta.classList.remove("show");
+  const buffer = base64ToArrayBuffer(window.MERIFIC_SAMPLES[lvl]);
+  runAnalysisSkill1(buffer, `primjer-razina-${lvl}.xlsx`);
+});
+
+/* --- tabs --- */
+const tabButtons = { excel: document.getElementById("tabBtnExcel"), text: document.getElementById("tabBtnText") };
+const tabPanels = { excel: document.getElementById("tabExcel"), text: document.getElementById("tabText") };
+function showTab(name) {
+  for (const key of Object.keys(tabPanels)) {
+    tabPanels[key].classList.toggle("hidden", key !== name);
+    tabButtons[key].classList.toggle("active", key === name);
+  }
+}
+tabButtons.excel.addEventListener("click", () => showTab("excel"));
+tabButtons.text.addEventListener("click", () => showTab("text"));
+
+/* --- text tab wiring --- */
+const textInput = document.getElementById("textInput");
+const textFileInput = document.getElementById("textFileInput");
+const textFileMeta = document.getElementById("textFileMeta");
+
+document.getElementById("analyzeTextBtn").addEventListener("click", () => {
+  const text = textInput.value.trim();
+  if (!text) return;
+  textFileMeta.classList.remove("show");
+  runAnalysisSkill2(text, "zalijepljeni tekst");
+});
+
+textFileInput.addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  textFileMeta.textContent = `${file.name} · ${humanSize(file.size)}`;
+  textFileMeta.classList.add("show");
+  try {
+    const text = file.name.toLowerCase().endsWith(".docx")
+      ? await extractDocxText(await file.arrayBuffer())
+      : await file.text();
+    textInput.value = text;
+    await runAnalysisSkill2(text, file.name);
+  } catch (err) {
+    renderError(err && err.message ? err.message : String(err));
+  }
+});
+
+document.getElementById("textSampleButtons").addEventListener("click", (e) => {
+  const btn = e.target.closest(".sample-btn");
+  if (!btn) return;
+  const lvl = btn.getAttribute("data-level");
+  textFileMeta.classList.remove("show");
+  const text = window.MERIFIC_TEXT_SAMPLES[lvl];
+  textInput.value = text;
+  runAnalysisSkill2(text, `primjer-razina-${lvl}.txt`);
+});
+
+/* --- certificate download (button is re-created on every paintResults(), so delegate) --- */
+document.getElementById("resultsPanel").addEventListener("click", (e) => {
+  if (e.target.closest("#downloadCertBtn")) downloadCertificate();
+});
+</script>
+
+<script>
+window.MERIFIC_SAMPLES = {"1": "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", "2": "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", "3": "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", "4": "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"};
+</script>
+
+<script>
+window.MERIFIC_TEXT_SAMPLES = {"1": "Izvještaj o poslovanju za treći kvartal\n\nU tablici ispod prikazani su prihodi i troškovi po mjesecima.\n\nMjesec: Srpanj, Kolovoz, Rujan\nPrihod: 120.000, 125.000, 131.000\nTrošak: 90.000, 95.000, 101.000\n\nTroškovi su bili viši nego prethodne godine.\n\nPrihodi su porasli za 12% u trećem kvartalu.\n\nZa prikaz trenda prihoda kroz vrijeme korišten je tortni grafikon.\n", "2": "Izvještaj o ostvarenju plana za treći kvartal\n\nUsporedbom ostvarenja s planom po svim kategorijama, troškovi marketinga odstupaju za više od 10% u odnosu na plan.\n\nTroškovi su porasli zbog jednokratnog troška restrukturiranja u kolovozu.\n\nLinijski grafikon prikazuje trend prihoda kroz posljednjih 12 mjeseci s označenom linijom plana.\n\nPrihodi su u skladu s planom, dok su troškovi iznad plana.\n", "3": "Analiza profitabilnosti po segmentu\n\nU odnosu na prethodnu godinu, ukupna marža je porasla za 3 postotna boda, no rast je usporen u trećem kvartalu.\n\nKljučna poruka: fokusiranjem prodaje na top 20% kupaca po marži moguće je povećati EBITDA za 1,8 milijuna kuna u sljedećoj godini bez dodatnih troškova.\n\nPrvo, analiza pokazuje da 20% kupaca generira 80% ukupne marže poduzeća.\n\nDrugo, pad profitabilnosti u trećem kvartalu nije uzrokovan padom tržišta, nego gubitkom tržišnog udjela u segmentu B2B - dakle simptom je pad prodaje, a stvarni uzrok je gubitak konkurentske pozicije, a ne opći pad potražnje.\n\nTreće, scenarijska analiza za sljedeću godinu, temeljena na dvije ključne pretpostavke (rast tržišta i zadržavanje tržišnog udjela), pokazuje raspon EBITDA ishoda: base case 4,2 milijuna kuna, best case 5,6 milijuna kuna, worst case 2,9 milijuna kuna.\n\nZaključak i preporuka: predlažemo preusmjeravanje prodajnih resursa na top segment kupaca u sljedeća dva kvartala, uz praćenje slobodnog cash-flowa kao ključnog pokazatelja uspjeha.\n", "4": "Investicijska analiza - preuzimanje konkurenta X\n\nSažetak za upravu (jedna stranica): Preporučujemo odobrenje akvizicije uz preliminarnu procjenu neto sadašnje vrijednosti (NPV) od 3,4 milijuna eura, temeljenu na diskontiranom novčanom toku (DCF).\n\nOsjetljivosna analiza pokazuje da NPV mijenja predznak iz pozitivne u negativnu ako diskontna stopa prijeđe 14,5% ili ako terminalni rast padne ispod 1%, dok EBITDA marža u petoj godini ima najveći utjecaj na zaključak od sve tri ključne pretpostavke.\n\nU prilogu za CFO nalazi se detaljna metodologija izračuna WACC-a i pretpostavki po godinama, dok je operativnom timu poslana zasebna, tehnički pojednostavljena verzija fokusirana na integraciju.\n\nNapomena o ograničenjima: procjena tržišnog rasta temelji se na podacima nedovoljne pouzdanosti za segment izvan EU tržišta, stoga preporučujemo dodatnu due diligence prije konačne odluke o toj komponenti vrijednosti.\n\nAnaliza integrira financijsku procjenu sa strateškim kontekstom konsolidacije tržišta i operativnim rizicima integracije dviju organizacija.\n"};
+</script>
